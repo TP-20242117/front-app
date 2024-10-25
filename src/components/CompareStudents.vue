@@ -1,6 +1,5 @@
 <template>
     <div class="container">
-      <!-- Dropdowns de selección de estudiantes -->
       <div class="dropdowns">
         <div class="dropdown">
           <select v-model="selectedStudent1" @change="loadReports(1)">
@@ -21,7 +20,6 @@
         </div>
       </div>
   
-      <!-- Informes del Estudiante 1 -->
       <div v-if="reportUrls1.length" class="reports">
         <h3>Estudiante 1: {{ selectedStudent1 }}</h3>
         <div class="report-grid">
@@ -31,7 +29,6 @@
         </div>
       </div>
   
-      <!-- Informes del Estudiante 2 -->
       <div v-if="reportUrls2.length" class="reports">
         <h3>Estudiante 2: {{ selectedStudent2 }}</h3>
         <div class="report-grid">
@@ -56,20 +53,18 @@
       };
     },
     methods: {
-      // Método para cargar los informes según el alumno seleccionado
       loadReports(studentNumber) {
-        const reportUrls = this.generateReportUrls(); // Generar 3 URLs de Power BI
-  
+        const reportUrls = this.generateReportUrls();
+    
         if (studentNumber === 1) {
           this.reportUrls1 = reportUrls;
         } else if (studentNumber === 2) {
           this.reportUrls2 = reportUrls;
         }
       },
-  
-      // Simula la generación de URLs para las pruebas de Power BI
+    
       generateReportUrls() {
-        return Array(3).fill(this.powerBiBaseUrl); // Simula 3 informes con la misma URL
+        return Array(3).fill(this.powerBiBaseUrl);
       }
     }
   };
@@ -110,7 +105,7 @@
     border: 1px solid #ccc;
     border-radius: 8px;
     overflow: hidden;
-    min-height: 320px; /* Añadido para garantizar que tenga altura mínima */
+    min-height: 320px;
   }
   
   iframe {

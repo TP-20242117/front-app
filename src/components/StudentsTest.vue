@@ -185,8 +185,8 @@ export default {
   border-color: #2d3748 !important;
 }
 .dark-theme .table td, .dark-theme .table th {
-  background-color: #4a5568 !important; /* Fondo de celdas */
-  color: #cbd5e0 !important; /* Color del texto en celdas */
+  background-color: #4a5568 !important;
+  color: #cbd5e0 !important;
 }
 .dark-theme .table-striped tbody tr:nth-of-type(odd) {
   background-color: #3b4252 !important;
@@ -203,9 +203,9 @@ export default {
 }
 .dark-theme .input-group-text, 
 .dark-theme .form-control {
-  background-color: #4a5568 !important; /* Color de fondo del input */
-  color: #cbd5e0 !important; /* Color del texto en el input */
-  border: 1px solid #2d3748 !important; /* Color del borde del input */
+  background-color: #4a5568 !important;
+  color: #cbd5e0 !important;
+  border: 1px solid #2d3748 !important;
 }
 .dark-theme .badge.bg-success {
   background-color: #38a169 !important;
@@ -234,13 +234,10 @@ export default {
   color: #cbd5e0 !important;
   border-color: #2d3748 !important;
 }
-
-/* Estilos adicionales para el espaciado del navegador */
 .pagination {
-  padding: 10px 0; /* Espaciado vertical */
+  padding: 10px 0;
 }
-
 .page-link {
-  margin: 0 5px; /* Espaciado horizontal entre los enlaces de página */
+  margin: 0 5px;
 }
 </style>
