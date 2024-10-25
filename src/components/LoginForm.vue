@@ -62,8 +62,13 @@ export default {
   },
   methods: {
     login() {
-      console.log('Nombre o Email:', this.username, 'Contraseña:', this.password, 'Rol:', this.role);
-      this.$router.push({ name: '/Tests' });
+      if (this.role === 'profesor') {
+        this.$router.push({ name: 'salones' });
+      } else{
+        console.log('Nombre o Email:', this.username, 'Contraseña:', this.password, 'Rol:', this.role);
+        this.$router.push({ name: '/Tests' });
+      }
+      
     },
     goToRegister() {
       if (this.role === 'profesor') {

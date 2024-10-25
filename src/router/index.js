@@ -9,6 +9,12 @@ import CPTTask from '../components/ContinuousPerformanceTask.vue';
 import StopSignalTask from '../components/StopSignalTask.vue';
 import Profile from '../components/AppProfile.vue';
 import Faq from '../components/AppFAQ.vue';
+import salones from '../components/ClassRooms.vue';
+import IndividualClassRooms from '../components/IndividualClassRooms.vue';
+import MainLayoutTeacher from '../components/MainLayoutTeacher.vue';
+import StudentsTest from '../components/StudentsTest.vue';
+import DashboardApp from '../components/DashboardApp.vue';
+import CompareStudents from '../components/CompareStudents.vue';
 
 const routes = [
   {
@@ -54,6 +60,49 @@ const routes = [
         path: '/profile',
         name: 'Profile',
         component: Profile,
+      },
+      {
+        path: '/faq',
+        name: 'FAQ',
+        component: Faq,
+      },
+      
+    ],
+  },
+  {
+    path: '/professor',
+    component: MainLayoutTeacher,
+    children: [
+      {
+        path: '/salones',
+        name: 'salones',
+        component: salones,
+      },
+      {
+        path: '/salon/:name',
+        name: 'IndividualClassRooms',
+        component: IndividualClassRooms,
+        props: true, 
+      },
+      {
+        path: '/tests-alumnos',
+        name: 'tests-alumnos',
+        component: StudentsTest,
+      },
+      {
+        path: '/profile',
+        name: 'Profile',
+        component: Profile,
+      },
+      {
+        path: '/dashboard',
+        name: 'dashboard',
+        component: DashboardApp,
+      },
+      {
+        path: '/compare-students',
+        name: 'compare-students',
+        component: CompareStudents,
       },
       {
         path: '/faq',

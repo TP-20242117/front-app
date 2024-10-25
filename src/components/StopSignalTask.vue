@@ -20,18 +20,19 @@
         <div class="arrow-container">
           <span v-if="showArrow && currentDirection === 'left'" class="arrow">⬅️</span>
           <span v-if="showArrow && currentDirection === 'right'" class="arrow">➡️</span>
-          <span v-if="showWaitingSymbol" class="waiting-symbol">🔄</span>
         </div>
 
         <p v-if="showResult" :class="result === 'correct' ? 'correct' : result === 'wrong' ? 'wrong' : 'missed'" class="result-text">
-          {{ result === 'correct' ? 'Correcto' : result === 'wrong' ? 'Incorrecto' : 'No presionaste :(' }}
+          <i v-if="result === 'correct'" class="pi pi-check icon"></i>
+          <i v-if="result === 'wrong'" class="pi pi-times icon"></i>
+          <i v-if="result === 'missed'" class="pi pi-exclamation-triangle icon"></i>
+          <span>{{ result === 'correct' ? 'Correcto' : result === 'wrong' ? 'Incorrecto' : 'No presionaste :(' }}</span>
         </p>
-
+        <br><br><br>
         <div class="timer">
           Tiempo restante: {{ timer }} segundos
         </div>
       </div>
-
       <div v-if="timeUp" class="result-screen">
         <h1>Tiempo agotado</h1>
         <p>Acertaste: {{ correctAnswers }} veces</p>
@@ -64,7 +65,6 @@ export default {
       hasAnswered: false,
       responseTimes: [],
       startTime: null,
-      showWaitingSymbol: false,
     };
   },
   mounted() {
@@ -94,26 +94,21 @@ export default {
 
       setTimeout(() => {
         this.showArrow = false;
+        if (!this.hasAnswered) {
+          this.result = 'missed';
+          this.missedArrows++;
+        }
+        this.showResult = true;
 
-        this.showWaitingSymbol = true;
         setTimeout(() => {
-          this.showWaitingSymbol = false;
-
-          if (!this.hasAnswered) {
-            this.result = 'missed';
-            this.missedArrows++;
+          this.showResult = false;
+          if (!this.timeUp) {
+            this.showNextArrow();
           }
-          this.showResult = true;
-
-          setTimeout(() => {
-            this.showResult = false;
-            if (!this.timeUp) {
-              this.showNextArrow();
-            }
-          }, 1000);
         }, 1000);
       }, 1000);
     },
+    
 
     generateRandomDirection() {
       const randomIndex = Math.floor(Math.random() * this.directions.length);
@@ -162,7 +157,6 @@ export default {
       this.timeUp = false;
       this.showArrow = false;
       this.showResult = false;
-      this.showWaitingSymbol = false;
     },
 
     goToTaskSelection() {
@@ -171,14 +165,15 @@ export default {
     },
     markTestAsCompleted(testIndex) {
       localStorage.setItem(`test-${testIndex}-completed`, JSON.stringify(true));
-    }
-  },
+    },
+  
   computed: {
     averageResponseTime() {
       const totalResponseTime = this.responseTimes.reduce((acc, time) => acc + time, 0);
       return this.responseTimes.length ? (totalResponseTime / this.responseTimes.length).toFixed(0) : 0;
     },
   },
+}
 };
 </script>
 
@@ -236,6 +231,9 @@ export default {
 .result-text {
   font-size: 24px;
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;  
 }
 
 .correct {

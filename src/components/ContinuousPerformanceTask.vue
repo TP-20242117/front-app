@@ -4,11 +4,11 @@
       <h1>Instrucciones</h1>
       <p>
         El objetivo de esta evaluación es medir tu <strong>atención</strong> y <strong>velocidad de respuesta</strong>.
-        Durante la prueba, verás letras en pantalla y deberás hacer clic en la letra que corresponde en el momento en que aparezca.
+        Durante la prueba, verás letras en pantalla y deberás presionar espacio cuando la letra que corresponde en el momento aparezca.
       </p>
       <h2>Ejemplo:</h2>
       <p>Presione la letra: A</p>
-      <p>Deberás hacer clic en la letra A en el momento que aparezca.</p>
+      <p>Deberás presionar espacio cuando la letra A en el momento que aparezca.</p>
       <button @click="startTask">Iniciar Tarea</button>
     </div>
 
@@ -67,9 +67,9 @@ export default {
     },
     startLetterChange() {
       this.intervalId = setInterval(() => {
-        this.generateRandomLetter();
         this.checkOmissionError();
-      }, 1000);
+        this.generateRandomLetter();
+      }, 500);
     },
     generateRandomLetter() {
       const randomIndex = Math.floor(Math.random() * this.letters.length);
@@ -99,12 +99,12 @@ export default {
         this.showErrorScreen = true;
         setTimeout(() => {
           this.showErrorScreen = false;
-        }, 1000);
+        }, 500);
       }
     },
     checkOmissionError() {
-      if (!this.responded && this.currentLetter === this.targetLetter) {
-        this.omissionErrors++;
+      if (this.currentLetter === this.targetLetter && !this.responded) {
+        this.omissionErrors++; 
       }
     },
     startTimer() {
