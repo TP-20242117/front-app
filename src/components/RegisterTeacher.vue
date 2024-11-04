@@ -82,6 +82,7 @@ export default {
       auth.registerEducator(educatorData)
         .then(response => {
           console.log('Registro exitoso:', response);
+          this.$router.push({ name: 'Login' });
           // Aquí puedes redirigir al usuario o mostrar un mensaje de éxito
         })
         .catch(error => {
