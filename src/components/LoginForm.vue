@@ -39,6 +39,7 @@
             required
           />
         </div>
+        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
         <div class="register-link">
           <p>
             ¿No tienes una cuenta?
@@ -52,23 +53,65 @@
 </template>
 
 <script>
+import auth from '/services/auth';
+
 export default {
   data() {
     return {
       username: '',
       password: '',
       role: 'alumno',
+      errorMessage: '' // Para mostrar mensajes de error
     };
   },
   methods: {
-    login() {
-      if (this.role === 'profesor') {
-        this.$router.push({ name: 'salones' });
-      } else{
-        console.log('Nombre o Email:', this.username, 'Contraseña:', this.password, 'Rol:', this.role);
-        this.$router.push({ name: '/Tests' });
-      }
+    async login() {
+      try {
+        let response;
+        if (this.role === 'profesor') {
+          response = await auth.loginEducator({
+            email: this.username,
+            password: this.password
+          });
+        } else {
+          response = await auth.loginStudent({
+            username: this.username,
+            password: this.password
+          });
+        }
       
+        // Verificar si la respuesta indica éxito o error
+        if (response.data && response.data.error) {
+          throw new Error(response.data.message);
+        }
+      
+        // Redirigir solo si el inicio de sesión es exitoso
+        console.log('Inicio de sesión exitoso:', response.data);
+        this.errorMessage = ''; // Limpiar el mensaje de error en caso de éxito
+      
+        if (this.role === 'profesor') {
+          this.$router.push({ name: 'salones' });
+        } else {
+          this.$router.push({ name: 'Tests' });
+        }
+      } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+      
+        // Intentar capturar el mensaje de error correcto del objeto
+        if (error.response && error.response.status === 401) {
+          this.errorMessage = 'Credenciales incorrectas. Inténtalo de nuevo.';
+        } else if (error.message) {
+          // Intentar mostrar el mensaje dentro del error si está disponible
+          try {
+            const errorMessage = JSON.parse(error.message);
+            this.errorMessage = errorMessage.response.message || 'Credenciales incorrectas. Inténtalo de nuevo.';
+          } catch (e) {
+            this.errorMessage = 'Credenciales incorrectas. Inténtalo de nuevo.';
+          }
+        } else {
+          this.errorMessage = 'Ocurrió un error al iniciar sesión. Inténtalo más tarde.';
+        }
+      }
     },
     goToRegister() {
       if (this.role === 'profesor') {
@@ -76,8 +119,8 @@ export default {
       } else {
         this.$router.push({ name: 'register' });
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -180,5 +223,9 @@ button {
 
 button:hover {
   background-color: #005bb5;
+}
+.error-message {
+  color: red;
+  margin-bottom: 10px;
 }
 </style>

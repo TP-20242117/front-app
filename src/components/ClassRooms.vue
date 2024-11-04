@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import classroomService from '/services/classrooms'; // Asegúrate de que esta ruta es correcta
+
 export default {
   data() {
     return {
@@ -36,13 +38,67 @@ export default {
       theme: localStorage.getItem('theme') || 'light',
     };
   },
+  created() {
+    this.fetchClassrooms(); // Cargar los salones al crear el componente
+  },
   methods: {
-    addClassroom() {
-      if (this.newClassroom.name) {
-        this.classrooms.push({ name: this.newClassroom.name, image: this.defaultImage });
-        this.newClassroom.name = '';
+    async fetchClassrooms() {
+      try {
+        const response = await classroomService.getAllClassrooms(); // Llama al servicio
+        console.log('Respuesta del servidor:', response); // Verifica la respuesta completa
+      
+        // Accede correctamente a los datos de la respuesta
+        const classroomsData = response.data.data; // Ajustamos el acceso a los datos
+      
+        // Verificamos que los datos sean un array
+        if (!response.data.error && Array.isArray(classroomsData)) {
+          const educatorId = localStorage.getItem('id'); // Obtener el ID del educador
+        
+          // Filtra los salones para incluir solo los que pertenecen al educador
+          this.classrooms = classroomsData
+            .filter(classroom => classroom.educatorId === parseInt(educatorId))
+            .map(classroom => ({
+              ...classroom,
+              image: this.defaultImage // Agrega la imagen por defecto
+            }));
+        } else {
+          console.error('Error al cargar los salones:', response.data.message || 'Respuesta no válida');
+        }
+      } catch (error) {
+        console.error('Error al cargar los salones:', error);
       }
     },
+
+    async addClassroom() {
+      if (this.newClassroom.name) {
+        const educatorId = localStorage.getItem('id'); // Obtener el ID del educador
+        const classroomData = {
+          name: this.newClassroom.name, // Nombre del salón
+          educatorId: educatorId ? parseInt(educatorId) : null, // Asegúrate de que el ID sea un número
+        };
+      
+        try {
+          const response = await classroomService.createClassroom(classroomData); // Llama al servicio para agregar el salón
+        
+          // Verifica la respuesta del servidor
+          if (response && !response.error) {
+            // Si el salón fue creado exitosamente, lo agregamos a la lista local
+            this.classrooms.push({ 
+              name: this.newClassroom.name, 
+              image: this.defaultImage // Añadimos la imagen por defecto
+            });
+            this.newClassroom.name = ''; // Reiniciar el campo de entrada
+          } else {
+            console.error('Error al agregar el salón:', response.message || 'Error desconocido');
+          }
+        } catch (error) {
+          console.error('Error al agregar el salón:', error.response ? error.response.data : error.message);
+        }
+      }
+    },
+
+
+
   },
 };
 </script>

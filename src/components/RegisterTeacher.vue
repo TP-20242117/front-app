@@ -1,74 +1,97 @@
 <template>
-    <div class="register-container">
-      <div class="register-box">
-        <h2>Registrarte</h2>
-        <form @submit.prevent="register">
-          <div class="input-box">
-            <label for="fullName">Nombre Completo</label>
-            <input
-              type="text"
-              id="fullName"
-              v-model="fullName"
-              placeholder="Ingresa su nombre completo"
-              required
-            />
-          </div>
-          <div class="input-box">
-            <label for="email">Correo</label>
-            <input
-              type="email"
-              id="email"
-              v-model="email"
-              placeholder="Ingresa tu correo"
-              required
-            />
-          </div>
-          <div class="input-box">
-            <label for="password">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              v-model="password"
-              placeholder="Ingresa tu contraseña"
-              required
-            />
-          </div>
-          <div class="input-box">
-            <label for="confirmPassword">Repite la contraseña</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              v-model="confirmPassword"
-              placeholder="Ingresa la contraseña nuevamente"
-              required
-            />
-          </div>
-          <div class="login-link">
-            <p>¿Ya tienes una cuenta? <router-link to="/">Inicia Sesión</router-link></p>
-          </div>
-          <button type="submit">Crear cuenta</button>
-        </form>
-      </div>
+  <div class="register-container">
+    <div class="register-box">
+      <h2>Registrarte</h2>
+      <form @submit.prevent="register">
+        <div class="input-box">
+          <label for="name">Nombre Completo</label>
+          <input
+            type="text"
+            id="name"
+            v-model="name"
+            placeholder="Ingresa su nombre completo"
+            required
+          />
+        </div>
+        <div class="input-box">
+          <label for="email">Correo</label>
+          <input
+            type="email"
+            id="email"
+            v-model="email"
+            placeholder="Ingresa tu correo"
+            required
+          />
+        </div>
+        <div class="input-box">
+          <label for="password">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            placeholder="Ingresa tu contraseña"
+            required
+          />
+        </div>
+        <div class="input-box">
+          <label for="confirmPassword">Repite la contraseña</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            v-model="confirmPassword"
+            placeholder="Ingresa la contraseña nuevamente"
+            required
+          />
+        </div>
+        <div class="login-link">
+          <p>¿Ya tienes una cuenta? <router-link to="/">Inicia Sesión</router-link></p>
+        </div>
+        <button type="submit">Crear cuenta</button>
+      </form>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        fullName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
+  </div>
+</template>
+
+<script>
+import auth from '/services/auth';
+
+export default {
+  data() {
+    return {
+      name: '', 
+      email: '',
+      password: '',
+      confirmPassword: '', // Este campo se mantiene solo para validación
+    };
+  },
+  methods: {
+    register() {
+      // Validación de contraseñas
+      if (this.password !== this.confirmPassword) {
+        alert('Las contraseñas no coinciden.');
+        return;
+      }
+
+      // Solo enviamos los datos necesarios al backend
+      const educatorData = {
+        name: this.name, // Cambiado aquí también
+        email: this.email,
+        password: this.password,
       };
+
+      auth.registerEducator(educatorData)
+        .then(response => {
+          console.log('Registro exitoso:', response);
+          // Aquí puedes redirigir al usuario o mostrar un mensaje de éxito
+        })
+        .catch(error => {
+          console.error('Error en el registro:', error);
+          alert('Ocurrió un error al registrar al educador.'); // Puedes personalizar el mensaje
+        });
     },
-    methods: {
-      register() {
-        console.log('Registrando profesor con los siguientes datos:', this.fullName, this.email);
-      },
-    },
-  };
-  </script>
+  },
+};
+</script>
   
   <style scoped>
   .register-container {
