@@ -49,6 +49,8 @@
 </template>
 
 <script>
+import  ResultService  from '/services/result';
+
 export default {
   data() {
     return {
@@ -132,10 +134,32 @@ export default {
     },
     goToInstructions() {
       this.markTestAsCompleted(0);
+      this.submitStroopResults();
       this.$router.push('/tests');
     },
     markTestAsCompleted(testIndex) {
       localStorage.setItem(`test-${testIndex}-completed`, JSON.stringify(true));
+    },
+    async submitStroopResults() {
+      const evaluationId = localStorage.getItem('evaluationId');
+
+      if (evaluationId) {
+        const stroopData = {
+          evaluationId: parseInt(evaluationId),
+          averageResponseTime: parseInt(this.averageResponseTime),
+          correctAnswers: this.correctAnswers,
+          incorrectAnswers: this.wrongAnswers
+        };
+
+        try {
+          await ResultService.createStroopResult(stroopData);
+          console.log('Resultados de Stroop enviados correctamente');
+        } catch (error) {
+          console.error('Error al enviar los resultados de Stroop:', error);
+        }
+      } else {
+        console.error('No se encontró el evaluationId en el localStorage');
+      }
     }
   },
   computed: {

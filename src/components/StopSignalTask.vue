@@ -2,12 +2,8 @@
   <div class="stop-signal-task">
     <div v-if="!taskStarted" class="instructions-screen">
       <h1>Instrucciones</h1>
-      <p>
-        El objetivo de este test es evaluar tu capacidad de respuesta y autocontrol.
-      </p>
-      <p>
-        Durante la prueba, verás flechas en pantalla y deberás presionar las teclas de dirección correspondientes.
-      </p>
+      <p>El objetivo de este test es evaluar tu capacidad de respuesta y autocontrol.</p>
+      <p>Durante la prueba, verás flechas en pantalla y deberás presionar las teclas de dirección correspondientes.</p>
       <h2>Ejemplo:</h2>
       <p>⬅️ Deberás presionar la tecla izquierda</p>
       <p>➡️ Deberás presionar la tecla derecha</p>
@@ -28,10 +24,8 @@
           <i v-if="result === 'missed'" class="pi pi-exclamation-triangle icon"></i>
           <span>{{ result === 'correct' ? 'Correcto' : result === 'wrong' ? 'Incorrecto' : 'No presionaste :(' }}</span>
         </p>
-        <br><br><br>
-        <div class="timer">
-          Tiempo restante: {{ timer }} segundos
-        </div>
+
+        <div class="timer">Tiempo restante: {{ timer }} segundos</div>
       </div>
       <div v-if="timeUp" class="result-screen">
         <h1>Tiempo agotado</h1>
@@ -46,12 +40,14 @@
 </template>
 
 <script>
+import ResultService from "/services/result";
+
 export default {
   data() {
     return {
       taskStarted: false,
-      directions: ['left', 'right'],
-      currentDirection: '',
+      directions: ["left", "right"],
+      currentDirection: "",
       result: null,
       intervalId: null,
       timer: 60,
@@ -68,10 +64,10 @@ export default {
     };
   },
   mounted() {
-    window.addEventListener('keydown', this.handleKeyPress);
+    window.addEventListener("keydown", this.handleKeyPress);
   },
   beforeUnmount() {
-    window.removeEventListener('keydown', this.handleKeyPress);
+    window.removeEventListener("keydown", this.handleKeyPress);
     clearInterval(this.intervalId);
     clearInterval(this.timerInterval);
   },
@@ -95,7 +91,7 @@ export default {
       setTimeout(() => {
         this.showArrow = false;
         if (!this.hasAnswered) {
-          this.result = 'missed';
+          this.result = "missed";
           this.missedArrows++;
         }
         this.showResult = true;
@@ -108,7 +104,6 @@ export default {
         }, 1000);
       }, 1000);
     },
-    
 
     generateRandomDirection() {
       const randomIndex = Math.floor(Math.random() * this.directions.length);
@@ -116,21 +111,24 @@ export default {
     },
 
     handleKeyPress(event) {
-      if (!this.timeUp && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
-        const responseTime = (new Date() - this.startTime);
+      if (
+        !this.timeUp &&
+        (event.key === "ArrowLeft" || event.key === "ArrowRight")
+      ) {
+        const responseTime = new Date() - this.startTime;
 
         if (
-          (event.key === 'ArrowLeft' && this.currentDirection === 'left') ||
-          (event.key === 'ArrowRight' && this.currentDirection === 'right')
+          (event.key === "ArrowLeft" && this.currentDirection === "left") ||
+          (event.key === "ArrowRight" && this.currentDirection === "right")
         ) {
           if (!this.hasAnswered) {
-            this.result = 'correct';
+            this.result = "correct";
             this.correctAnswers++;
             this.responseTimes.push(responseTime);
             this.hasAnswered = true;
           }
         } else {
-          this.result = 'wrong';
+          this.result = "wrong";
           this.wrongAnswers++;
           this.hasAnswered = true;
         }
@@ -160,23 +158,47 @@ export default {
     },
 
     goToTaskSelection() {
+      this.submitSSTResult();
       this.markTestAsCompleted(1);
-      this.$router.push('/tests');
+      this.$router.push("/tests");
     },
+
+    submitSSTResult() {
+      const evaluationId = localStorage.getItem('evaluationId');
+      const sstData = {
+        evaluationId: parseInt(evaluationId),
+        averageResponseTime: parseInt(this.averageResponseTime),
+        correctStops: this.correctAnswers,
+        incorrectStops: this.wrongAnswers,
+        ignoredArrows: this.missedArrows,
+      };
+
+      ResultService.createSSTResult(sstData)
+        .then((response) => {
+          console.log("SST result submitted successfully:", response);
+        })
+        .catch((error) => {
+          console.error("Failed to submit SST result:", error);
+        });
+    },
+
     markTestAsCompleted(testIndex) {
       localStorage.setItem(`test-${testIndex}-completed`, JSON.stringify(true));
     },
-  
+  },
   computed: {
     averageResponseTime() {
-      const totalResponseTime = this.responseTimes.reduce((acc, time) => acc + time, 0);
-      return this.responseTimes.length ? (totalResponseTime / this.responseTimes.length).toFixed(0) : 0;
+      const totalResponseTime = this.responseTimes.reduce(
+        (acc, time) => acc + time,
+        0
+      );
+      return this.responseTimes.length
+        ? (totalResponseTime / this.responseTimes.length).toFixed(0)
+        : 0;
     },
   },
-}
 };
 </script>
-
 <style scoped>
 .stop-signal-task {
   text-align: center;

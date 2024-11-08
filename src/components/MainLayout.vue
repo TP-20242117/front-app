@@ -42,6 +42,7 @@ export default {
 }
 
 .layout-content {
+  margin-top: 10vh;
   display: flex;
   flex: 1;
 }
@@ -54,6 +55,7 @@ export default {
   flex: 1;
   padding: 20px;
   background-color: #f9f9f9;
+  margin-left: 170px;
 }
 
 .dark-theme .main-content {

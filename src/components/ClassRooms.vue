@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import classroomService from '/services/classrooms'; // Asegúrate de que esta ruta es correcta
+import classroomService from '/services/classrooms';
 
 export default {
   data() {
@@ -39,27 +39,23 @@ export default {
     };
   },
   created() {
-    this.fetchClassrooms(); // Cargar los salones al crear el componente
+    this.fetchClassrooms();
   },
   methods: {
     async fetchClassrooms() {
       try {
-        const response = await classroomService.getAllClassrooms(); // Llama al servicio
-        console.log('Respuesta del servidor:', response); // Verifica la respuesta completa
+        const response = await classroomService.getAllClassrooms();
       
-        // Accede correctamente a los datos de la respuesta
-        const classroomsData = response.data.data; // Ajustamos el acceso a los datos
+        const classroomsData = response.data.data;
       
-        // Verificamos que los datos sean un array
         if (!response.data.error && Array.isArray(classroomsData)) {
-          const educatorId = localStorage.getItem('id'); // Obtener el ID del educador
+          const educatorId = localStorage.getItem('id');
         
-          // Filtra los salones para incluir solo los que pertenecen al educador
           this.classrooms = classroomsData
             .filter(classroom => classroom.educatorId === parseInt(educatorId))
             .map(classroom => ({
               ...classroom,
-              image: this.defaultImage // Agrega la imagen por defecto
+              image: this.defaultImage
             }));
         } else {
           console.error('Error al cargar los salones:', response.data.message || 'Respuesta no válida');
@@ -71,23 +67,21 @@ export default {
 
     async addClassroom() {
       if (this.newClassroom.name) {
-        const educatorId = localStorage.getItem('id'); // Obtener el ID del educador
+        const educatorId = localStorage.getItem('id');
         const classroomData = {
-          name: this.newClassroom.name, // Nombre del salón
-          educatorId: educatorId ? parseInt(educatorId) : null, // Asegúrate de que el ID sea un número
+          name: this.newClassroom.name,
+          educatorId: educatorId ? parseInt(educatorId) : null,
         };
       
         try {
-          const response = await classroomService.createClassroom(classroomData); // Llama al servicio para agregar el salón
+          const response = await classroomService.createClassroom(classroomData);
         
-          // Verifica la respuesta del servidor
           if (response && !response.error) {
-            // Si el salón fue creado exitosamente, lo agregamos a la lista local
             this.classrooms.push({ 
               name: this.newClassroom.name, 
-              image: this.defaultImage // Añadimos la imagen por defecto
+              image: this.defaultImage 
             });
-            this.newClassroom.name = ''; // Reiniciar el campo de entrada
+            this.newClassroom.name = '';
           } else {
             console.error('Error al agregar el salón:', response.message || 'Error desconocido');
           }
@@ -96,9 +90,6 @@ export default {
         }
       }
     },
-
-
-
   },
 };
 </script>

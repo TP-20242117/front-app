@@ -27,6 +27,10 @@
 </template>
 
 <script>
+import EvaluationServices from '/services/evaluation';
+import ResultServices from '/services/result';
+import PredictServices from '/services/predict';
+
 export default {
   data() {
     return {
@@ -56,6 +60,7 @@ export default {
   mounted() {
     this.loadTestStatus();
     document.body.classList.toggle('dark-theme', this.theme === 'dark');
+    this.checkAndUpdateEvaluationStatus();
   },
   methods: {
     loadTestStatus() {
@@ -68,11 +73,97 @@ export default {
     },
     markTestCompleted(testIndex) {
       this.tests[testIndex].completed = true;
-      localStorage.setItem(
-        `test-${testIndex}-completed`,
-        JSON.stringify(true)
-      );
+      localStorage.setItem(`test-${testIndex}-completed`, JSON.stringify(true));
     },
+    async checkAndUpdateEvaluationStatus() {
+      const evaluationId = localStorage.getItem('evaluationId');
+      if (evaluationId) {
+        try {
+          const response = await EvaluationServices.getAllEvaluations();
+          const evaluations = response.data.data;
+
+          const evaluation = evaluations.find((e) => e.id == evaluationId);
+
+          if (evaluation) {
+            await this.checkTestResults(evaluationId);
+
+            const allTestsCompleted = this.tests.every(test => test.completed);
+            if (allTestsCompleted) {
+              await this.updateEvaluationToCompleted(evaluationId);
+
+              this.callPredictService();
+            }
+          }
+        } catch (error) {
+          console.error('Error al obtener las evaluaciones:', error);
+        }
+      }
+    },
+    async checkTestResults(evaluationId) {
+      try {
+        const stroopResult = await ResultServices.getStroopResultsByEvaluation(evaluationId);
+        if (stroopResult.data.data && stroopResult.data.data.length > 0) {
+          this.tests[0].completed = true;
+          localStorage.setItem('test-0-completed', 'true');
+        }
+
+        const sstResult = await ResultServices.getSSTResultsByEvaluation(evaluationId);
+        if (sstResult.data.data && sstResult.data.data.length > 0) {
+          this.tests[1].completed = true;
+          localStorage.setItem('test-1-completed', 'true');
+        }
+
+        const cptResult = await ResultServices.getCPTResultsByEvaluation(evaluationId);
+        if (cptResult.data.data && cptResult.data.data.length > 0) {
+          this.tests[2].completed = true;
+          localStorage.setItem('test-2-completed', 'true');
+        }
+      } catch (error) {
+        console.error('Error al verificar los resultados de las pruebas:', error);
+      }
+    },
+    async updateEvaluationToCompleted(evaluationId) {
+      try {
+        const evaluationData = { type: 'Completo' };
+        await EvaluationServices.updateEvaluation(evaluationId, evaluationData);
+        console.log('Evaluación actualizada a Completado');
+      } catch (error) {
+        console.error('Error al actualizar la evaluación:', error);
+      }
+    },
+    async callPredictService() {
+      try {
+        const stroopResults = this.tests[0].completed ? [{ 
+          averageResponseTime: 587, 
+          correctAnswers: 36, 
+          incorrectAnswers: 0 
+        }] : [];
+
+        const cptResults = this.tests[1].completed ? [{ 
+          averageResponseTime: 418, 
+          omissionErrors: 3, 
+          commissionErrors: 2 
+        }] : [];
+
+        const sstResults = this.tests[2].completed ? [{ 
+          averageResponseTime: 658, 
+          correctStops: 30, 
+          incorrectStops: 2, 
+          ignoredArrows: 3 
+        }] : [];
+
+        const data = {
+          stroopResults: stroopResults,
+          cptResults: cptResults,
+          sstResults: sstResults
+        };
+
+        const response = await PredictServices.predict(data);
+        console.log('Resultado de la predicción:', response.data);
+      } catch (error) {
+        console.error('Error al llamar al servicio predict:', error);
+      }
+    }
   },
 };
 </script>

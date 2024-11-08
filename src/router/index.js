@@ -15,6 +15,8 @@ import MainLayoutTeacher from '../components/MainLayoutTeacher.vue';
 import StudentsTest from '../components/StudentsTest.vue';
 import DashboardApp from '../components/DashboardApp.vue';
 import CompareStudents from '../components/CompareStudents.vue';
+import ProfileEducator from '../components/AppProfileEducator.vue';
+import FaqEducator from '../components/AppFAQEducator.vue';
 
 const routes = [
   {
@@ -90,9 +92,9 @@ const routes = [
         component: StudentsTest,
       },
       {
-        path: '/profile',
-        name: 'Profile',
-        component: Profile,
+        path: '/profile-educator',
+        name: 'Profile-educator',
+        component: ProfileEducator,
       },
       {
         path: '/dashboard',
@@ -105,9 +107,9 @@ const routes = [
         component: CompareStudents,
       },
       {
-        path: '/faq',
-        name: 'FAQ',
-        component: Faq,
+        path: '/faq-educator',
+        name: 'FAQEducator',
+        component: FaqEducator,
       },
     ],
   },

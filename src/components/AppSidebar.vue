@@ -45,6 +45,7 @@ export default {
       document.body.classList.toggle('dark-theme', this.theme === 'dark');
     },
     exit(){
+      localStorage.clear();
       this.$router.push({ name: 'Login' });
     }
   },
@@ -56,7 +57,7 @@ export default {
 
 <style scoped>
 .sidebar {
-  height: auto;
+  height: 90vh;
   width: 220px;
   background-color: #dddddd;
   padding: 20px;
@@ -64,6 +65,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: fixed;
 }
 
 ul {

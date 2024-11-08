@@ -12,23 +12,21 @@ export default {
   loginEducator(loginData) {
     return apiClient.post('/auth/login-educator', loginData)
       .then(response => {
-        this.setId(response.data.data.id); // Asegúrate de que response.data.id existe
+        this.setId(response.data.data.id);
         return response;
       })
       .catch(error => {
         console.error('Error en el inicio de sesión de educador:', error);
-        throw error; // Lanza el error para manejarlo fuera si es necesario
+        throw error;
       });
   },
 
   loginStudent(loginData) {
-    return apiClient.post('/auth/login-student', loginData)
+    return apiClient.post('/auth/login-student', loginData);
   },
 
   setId(idex) {
     console.log('Guardando id en localStorage:', idex);
     localStorage.setItem('id', idex);
   }
-
-
 };

@@ -1,19 +1,17 @@
 <template>
   <div :class="['main-content', theme]">
-    <h1 class="text-2xl font-bold text-center mb-6">Hola Jonatan</h1>
+    
     
     <div :class="['report-card', theme]">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Reporte de Test Recientes</h2>
-        <button class="export-btn px-4 py-2 rounded-lg transition-colors duration-300">
-          Export PDF
-        </button>
+        
       </div>
 
       <div class="iframe-container">
         <iframe
           class="powerbi-iframe"
-          src="https://app.powerbi.com/view?r=eyJrIjoiMjkyYjM1MDktNjgyMS00Mzc3LWJmZTEtOTIxM2RjMGEwMWVmIiwidCI6Ijc0MzBjOGJlLWQ1ZTMtNDgxYi1hNTcwLTZjOGI0MzRkZGY4OCIsImMiOjZ9"
+          src="https://app.powerbi.com/view?r=eyJrIjoiZGIwMGZjMTAtNmViYS00Mzk1LWE2OTktOThiNWM0N2IwZDRmIiwidCI6IjBlMGNiMDYwLTA5YWQtNDlmNS1hMDA1LTY4YjliNDlhYTFmNiIsImMiOjR9"
           frameborder="0"
           allowfullscreen="true"
         ></iframe>

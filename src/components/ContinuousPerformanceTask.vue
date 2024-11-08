@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import ResultService from '/services/result';
+
 export default {
   data() {
     return {
@@ -104,7 +106,7 @@ export default {
     },
     checkOmissionError() {
       if (this.currentLetter === this.targetLetter && !this.responded) {
-        this.omissionErrors++; 
+        this.omissionErrors++;
       }
     },
     startTimer() {
@@ -116,16 +118,30 @@ export default {
         }
       }, 1000);
     },
-    endTask() {
+    async endTask() {
       this.timeUp = true;
       clearInterval(this.intervalId);
       clearInterval(this.timerInterval);
-        
+
       if (this.reactionTimes.length > 0) {
         const totalReactionTime = this.reactionTimes.reduce((acc, time) => acc + time, 0);
         this.averageReactionTime = (totalReactionTime / this.reactionTimes.length).toFixed(2);
       } else {
         this.averageReactionTime = "No hubo respuestas correctas";
+      }
+      const evaluationId = localStorage.getItem('evaluationId');
+      const cptData = {
+        evaluationId: parseInt(evaluationId),
+        averageResponseTime: this.reactionTimes.length > 0 ? parseFloat(this.averageReactionTime) : 0,
+        omissionErrors: this.omissionErrors,
+        commissionErrors: this.commissionErrors
+      };
+
+      try {
+        await ResultService.createCPTResult(cptData);
+        console.log('Resultados enviados correctamente');
+      } catch (error) {
+        console.error('Error al enviar los resultados:', error);
       }
     },
     goToTaskSelection() {

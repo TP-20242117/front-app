@@ -14,8 +14,11 @@ export default {};
   color: white;
   padding-left: 15px;
   text-align: left;
-  height: 50px;
+  height: 10vh;
   display: flex; 
   align-items: center; 
+  position: fixed;
+  z-index: 10000000;
+  width: 100vw;
 }
 </style>

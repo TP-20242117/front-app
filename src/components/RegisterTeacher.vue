@@ -61,20 +61,18 @@ export default {
       name: '', 
       email: '',
       password: '',
-      confirmPassword: '', // Este campo se mantiene solo para validación
+      confirmPassword: '',
     };
   },
   methods: {
     register() {
-      // Validación de contraseñas
       if (this.password !== this.confirmPassword) {
         alert('Las contraseñas no coinciden.');
         return;
       }
 
-      // Solo enviamos los datos necesarios al backend
       const educatorData = {
-        name: this.name, // Cambiado aquí también
+        name: this.name,
         email: this.email,
         password: this.password,
       };
@@ -83,89 +81,87 @@ export default {
         .then(response => {
           console.log('Registro exitoso:', response);
           this.$router.push({ name: 'Login' });
-          // Aquí puedes redirigir al usuario o mostrar un mensaje de éxito
         })
         .catch(error => {
           console.error('Error en el registro:', error);
-          alert('Ocurrió un error al registrar al educador.'); // Puedes personalizar el mensaje
+          alert('Ocurrió un error al registrar al educador.');
         });
     },
   },
 };
 </script>
-  
-  <style scoped>
-  .register-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #d2e1f9;
-  }
-  
-  .register-box {
-    background-color: white;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    width: 400px;
-  }
-  
-  h2 {
-    color: #007efe;
-    margin-bottom: 20px;
-  }
-  
-  .input-box {
-    margin-bottom: 20px;
-    text-align: left;
-  }
-  
-  .input-box label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #007efe;
-  }
-  
-  .input-box input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #007efe;
-    border-radius: 5px;
-    outline: none;
-  }
-  
-  .input-box input:focus {
-    border-color: #005bb5;
-  }
-  
-  button {
-    background-color: #007efe;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  button:hover {
-    background-color: #005bb5;
-  }
-  
-  .login-link {
-    margin-bottom: 20px;
-  }
-  
-  .login-link a {
-    color: #007EFE;
-    text-decoration: none;
-  }
-  
-  .login-link a:hover {
-    text-decoration: underline;
-  }
-  </style>
-  
+
+<style scoped>
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #d2e1f9;
+}
+
+.register-box {
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  width: 400px;
+}
+
+h2 {
+  color: #007efe;
+  margin-bottom: 20px;
+}
+
+.input-box {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.input-box label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #007efe;
+}
+
+.input-box input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #007efe;
+  border-radius: 5px;
+  outline: none;
+}
+
+.input-box input:focus {
+  border-color: #005bb5;
+}
+
+button {
+  background-color: #007efe;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #005bb5;
+}
+
+.login-link {
+  margin-bottom: 20px;
+}
+
+.login-link a {
+  color: #007EFE;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+</style>
