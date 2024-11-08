@@ -30,6 +30,7 @@
 import EvaluationServices from '/services/evaluation';
 import ResultServices from '/services/result';
 import PredictServices from '/services/predict';
+import StudentServices from '/services/student';
 
 export default {
   data() {
@@ -133,35 +134,46 @@ export default {
     },
     async callPredictService() {
       try {
-        const stroopResults = this.tests[0].completed ? [{ 
-          averageResponseTime: 587, 
-          correctAnswers: 36, 
-          incorrectAnswers: 0 
-        }] : [];
-
-        const cptResults = this.tests[1].completed ? [{ 
-          averageResponseTime: 418, 
-          omissionErrors: 3, 
-          commissionErrors: 2 
-        }] : [];
-
-        const sstResults = this.tests[2].completed ? [{ 
-          averageResponseTime: 658, 
-          correctStops: 30, 
-          incorrectStops: 2, 
-          ignoredArrows: 3 
-        }] : [];
-
+        const studentId = localStorage.getItem('studentId');
+        
+        const currentStudent = await StudentServices.getStudentById(studentId);
+        
+        if (currentStudent.data && currentStudent.data.data.hasTdah !== null) {
+          console.log('El estudiante ya tiene un valor para "hasTdah". No se enviará la predicción.');
+          return;
+        }
+      
+        const stroopResults = this.tests[0].completed ? await ResultServices.getStroopResultsByEvaluation(localStorage.getItem('evaluationId')) : [];
+        const cptResults = this.tests[1].completed ? await ResultServices.getCPTResultsByEvaluation(localStorage.getItem('evaluationId')) : [];
+        const sstResults = this.tests[2].completed ? await ResultServices.getSSTResultsByEvaluation(localStorage.getItem('evaluationId')) : [];
+      
         const data = {
-          stroopResults: stroopResults,
-          cptResults: cptResults,
-          sstResults: sstResults
+          stroopResults: stroopResults.data.data || [],
+          cptResults: cptResults.data.data || [],
+          sstResults: sstResults.data.data || []
         };
-
+      
         const response = await PredictServices.predict(data);
         console.log('Resultado de la predicción:', response.data);
+      
+        if (response.data && response.data.hasTdah !== undefined) {
+          const studentData = {
+            hasTdah: response.data.hasTdah
+          };
+        
+          await this.updateStudent(studentId, studentData);
+          console.log('Estudiante actualizado con TDAH:', studentData);
+        }
       } catch (error) {
         console.error('Error al llamar al servicio predict:', error);
+      }
+    },
+    async updateStudent(studentId, studentData) {
+      try {
+        await StudentServices.updateStudent(studentId, studentData);
+        console.log('Estudiante actualizado exitosamente');
+      } catch (error) {
+        console.error('Error al actualizar el estudiante:', error);
       }
     }
   },
