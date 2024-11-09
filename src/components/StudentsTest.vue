@@ -41,7 +41,7 @@
           <th>Status</th>
           <th>Fecha</th>
           <th>Nombre</th>
-          <th>Diagnostico</th>
+          <th>Resultado</th>
           <th>Edad</th>
           <th v-if="!isDarkTheme">Acciones</th>
         </tr>
@@ -157,7 +157,7 @@ export default {
         .then(response => {
           const students = response.data.data;
           const filteredStudents = students.filter(student => student.salonId === classroomId);
-
+        
           this.tests = filteredStudents.map(student => {
             const evaluation = student.evaluations.find(evaluation => evaluation.type === 'Completo');
             return {
@@ -165,7 +165,11 @@ export default {
               status: evaluation ? 'Completed' : 'Pending',
               fecha: evaluation ? evaluation.date : '',
               nombre: student.name,
-              resultado: student.hasTdah !== null ? student.hasTdah : null,
+              resultado: student.hasTdah === null 
+                ? 'Sin diagnóstico' 
+                : student.hasTdah === 0 
+                ? 'Sin Tdah' 
+                : 'Con Tdah',
               edad: student.age,
               classroomId: student.salonId,
             };
