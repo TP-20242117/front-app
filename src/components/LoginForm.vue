@@ -39,7 +39,6 @@
             required
           />
         </div>
-        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
         <div class="register-link">
           <p>
             ¿No tienes una cuenta?
