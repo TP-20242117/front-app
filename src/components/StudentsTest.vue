@@ -41,7 +41,7 @@
           <th>Status</th>
           <th>Fecha</th>
           <th>Nombre</th>
-          <th>Resultado</th>
+          <th>Diagnostico</th>
           <th>Edad</th>
           <th v-if="!isDarkTheme">Acciones</th>
         </tr>
