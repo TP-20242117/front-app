@@ -128,6 +128,7 @@
 <script>
 import studentService from "/services/student";
 import classRoomsService from "/services/classrooms";
+
 export default {
   data() {
     return {
@@ -209,16 +210,26 @@ export default {
 
   created() {
     this.loadClassrooms();
+  },
+
+  watch: {
+    '$store.state.theme': function (newTheme) {
+      const body = document.body;
+      if (newTheme === 'dark') {
+        body.classList.add('dark-theme');
+      } else {
+        body.classList.remove('dark-theme');
+      }
+    }
   }
 };
 </script>
 
 <style scoped>
 .container {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 20px;
-  margin-left: 80px !important;
   width: auto;
 }
 
@@ -231,15 +242,6 @@ select {
   width: 100%;
   font-size: 16px;
   border: 2px solid #007bff;
-  border-radius: 6px;
-  background-color: #f8f9fa;
-  transition: all 0.3s ease;
-}
-
-select:focus {
-  outline: none;
-  border-color: #0056b3;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 table {
@@ -248,26 +250,46 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
-  padding: 12px;
-  text-align: left;
+table th,
+table td {
+  padding: 8px 12px;
+  text-align: center;
   border: 1px solid #ddd;
 }
 
-th {
-  background-color: #007bff;
+.dark-theme {
+  background-color: #121212;
   color: white;
 }
 
-td {
-  background-color: #f8f9fa;
+.dark-theme .container {
+  background-color: #313131;
 }
 
-.mt-4 {
-  margin-top: 40px;
+.dark-theme .dropdown select,
+.dark-theme select {
+  background-color: #333;
+  color: white;
+  border: 2px solid #555;
 }
 
-.mb-3 {
-  margin-bottom: 20px;
+.dark-theme table {
+  background-color: #333;
+  color: white;
+}
+
+.dark-theme table th,
+.dark-theme table td {
+  background-color: #2a2a2a;
+  color: white;
+  border: 1px solid #444;
+}
+
+.dark-theme table thead th {
+  background-color: #3a3a3a;
+}
+
+.dark-theme p {
+  color: #e0e0e0;
 }
 </style>

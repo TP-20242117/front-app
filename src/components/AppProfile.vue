@@ -66,13 +66,13 @@ export default {
 <style scoped>
 .profile-container {
   display: flex;
-  justify-content: center;
   align-items: center;
   flex-direction: column;
   height: 100vh;
   background-color: #f5f5f5;
   font-family: 'Arial', sans-serif;
   color: #333;
+  margin-top: 50px;
 }
 
 h1 {
@@ -153,7 +153,9 @@ input:focus {
 .edit-button:hover {
   background-color: #0055cc;
 }
-
+.dark-theme .profile-container{
+  background-color: #313131;
+}
 .dark-theme .profile-card {
   background-color: #2c2c2c;
   color: #ddd;

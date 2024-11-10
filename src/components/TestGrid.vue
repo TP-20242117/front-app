@@ -6,19 +6,21 @@
         <div
           v-for="test in tests"
           :key="test.name"
-          :class="['test-card', { completed: test.completed }]"
-        >
+          :class="['test-card', { completed: test.completed }]">
           <router-link
             v-if="!test.completed"
             :to="test.route"
-            class="test-link"
-          >
-            <img :src="test.image" :alt="test.name" />
-            <p class="test-name">{{ test.name }}</p>
+            class="test-link">
+            <div class="test-card-content">
+              <img :src="test.image" :alt="test.name" />
+              <p class="test-name">{{ test.name }}</p>
+            </div>
           </router-link>
           <div v-else class="test-disabled">
-            <img :src="test.image" :alt="test.name" />
-            <p class="test-name">{{ test.name }} (Completada)</p>
+            <div class="test-card-content">
+              <img :src="test.image" :alt="test.name" />
+              <p class="test-name">{{ test.name }} (Completada)</p>
+            </div>
           </div>
         </div>
       </div>
@@ -31,6 +33,7 @@ import EvaluationServices from '/services/evaluation';
 import ResultServices from '/services/result';
 import PredictServices from '/services/predict';
 import StudentServices from '/services/student';
+import { useToast } from 'vue-toastification';
 
 export default {
   data() {
@@ -59,6 +62,15 @@ export default {
     };
   },
   mounted() {
+    const toast = useToast();
+    if (localStorage.getItem('loginSuccessToast') === 'true') {
+      toast('Inicio de sesión correcto', {
+        type: 'success',
+        timeout: 1000, 
+      });
+
+      localStorage.removeItem('loginSuccessToast');
+    }
     this.loadTestStatus();
     document.body.classList.toggle('dark-theme', this.theme === 'dark');
     this.checkAndUpdateEvaluationStatus();
@@ -196,12 +208,20 @@ h2 {
   flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 100%;
 }
 
 .tests-grid {
   display: flex;
+  flex-direction: column;
   gap: 20px;
+  width: 100%;
+  max-width: 600px;
+  justify-content: center;
+  align-items: center;
+  margin-left: 100px;
 }
 
 .test-card {
@@ -209,11 +229,15 @@ h2 {
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 200px;
-  text-align: center;
-  text-decoration: none;
+  text-align: left;
   color: inherit;
-  transition: transform 0.2s, background-color 0.3s;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-height: 120px;
+  cursor: pointer;
+  width: 100%;
 }
 
 .test-card.completed {
@@ -224,14 +248,29 @@ h2 {
   pointer-events: none;
 }
 
+.test-card-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 .test-card img {
-  max-width: 100%;
+  max-width: 200px;
   border-radius: 5px;
-  margin-bottom: 10px;
+  object-fit: contain;
+}
+
+.test-card .test-name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: inherit;
+  line-height: 1.4;
 }
 
 .test-card:hover {
   transform: scale(1.05);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
 }
 
 .dark-theme .main-content {
@@ -240,27 +279,22 @@ h2 {
 }
 
 .dark-theme .test-card {
-  background-color: #273852;
-  color: #ddd;
+  background-color: #2c3e50;
+  color: #f1f1f1;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .dark-theme .test-card.completed {
-  background-color: #007efe;
-  color: white;
-}
-
-.dark-theme .test-disabled {
-  color: #ccc;
+  background-color: #2c3e50;
 }
 
 .dark-theme .test-card:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
 }
 
 .test-name {
-  margin: 10px 0 0 0;
+  margin: 0;
   color: inherit;
   text-decoration: none;
 }
@@ -274,5 +308,9 @@ h2 {
 
 .test-link:hover {
   background-color: transparent;
+}
+
+.vue-toastification-container {
+  z-index: 10000 !important;
 }
 </style>

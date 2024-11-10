@@ -1,11 +1,11 @@
 <template>
-  <div class="test-table container mt-4" :class="{ 'dark-theme': isDarkTheme }">
+  <div :class="['test-table', 'container', 'mt-4', { 'dark-theme': isDarkTheme }]">
     <h2>Hola {{ professorName }}</h2>
     <p>Estos son los test del mes</p>
 
     <div class="d-flex justify-content-between mb-3">
-      <div class="input-group w-50">
-        <span class="input-group-text">
+      <div class="input-group w-50" :class="{ 'bg-dark': isDarkTheme }">
+        <span class="input-group-text" :class="{ 'bg-dark': isDarkTheme }">
           <i class="pi pi-search"></i>
         </span>
         <input
@@ -13,6 +13,7 @@
           class="form-control"
           placeholder="Buscar..."
           v-model="globalFilter"
+          :class="{ 'bg-dark text-light': isDarkTheme }"
         />
       </div>
       <div>
@@ -27,7 +28,13 @@
 
     <div class="mb-3">
       <label for="classroomDropdown" class="form-label">Selecciona un salón:</label>
-      <select id="classroomDropdown" class="form-select" v-model="selectedClassroom" @change="filterTestsByClassroom">
+      <select
+        id="classroomDropdown"
+        class="form-select"
+        v-model="selectedClassroom"
+        @change="filterTestsByClassroom"
+        :class="{ 'bg-dark text-light': isDarkTheme }"
+      >
         <option value="" disabled>Selecciona un salón</option>
         <option v-for="classroom in classrooms" :key="classroom.id" :value="classroom.id">
           {{ classroom.name }}
@@ -69,20 +76,6 @@
         </tr>
       </tbody>
     </table>
-
-    <nav aria-label="Page navigation" class="py-3">
-      <ul class="pagination justify-content-center">
-        <li class="page-item" :class="{ disabled: currentPage === 1 }">
-          <a class="page-link" @click="prevPage">Anterior</a>
-        </li>
-        <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: currentPage === page }">
-          <a class="page-link" @click="goToPage(page)">{{ page }}</a>
-        </li>
-        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-          <a class="page-link" @click="nextPage">Siguiente</a>
-        </li>
-      </ul>
-    </nav>
   </div>
 </template>
 
@@ -92,6 +85,8 @@ import classRoomsService from '/services/classrooms';
 import studentsService from '/services/student';
 import evaluationsService from '/services/evaluation';
 import educatorService from '/services/educator';
+import mailService from '/services/mail';
+import { useToast } from 'vue-toastification';
 
 export default {
   data() {
@@ -126,9 +121,28 @@ export default {
     this.loadProfessorName();
   },
   methods: {
+    sendEmail() {
+      const toast = useToast();
+      if (this.selectedClassroom) {
+        const professorEmail = "farma442@gmail.com"; 
+        const mailData = {
+          email: professorEmail,
+          salonId: this.selectedClassroom,
+        };
+        mailService.createMail(mailData)
+          .then(() => {
+            toast.success("Correo enviado exitosamente.");
+          })
+          .catch(error => {
+            console.error("Error al enviar el correo:", error);
+            toast.error("No se pudo enviar el correo. Inténtalo de nuevo.");
+          });
+      } else {
+        toast.warning("Por favor, selecciona un salón antes de enviar el correo.");
+      }
+    },
     loadClassrooms() {
       const educatorId = localStorage.getItem('id');
-
       if (educatorId) {
         classRoomsService.getClassroomsByEducator(educatorId)
           .then(response => {
@@ -193,7 +207,22 @@ export default {
       }
     },
     exportToExcel() {
-      const ws = XLSX.utils.json_to_sheet(this.filteredTests);
+      const filteredTestsForExport = this.filteredTests.map(test => {
+        const { status, fecha, nombre, resultado, edad } = test;
+        return { status, fecha, nombre, resultado, edad };
+      });
+
+      const formattedData = filteredTestsForExport.map(test => {
+        return {
+          'Status': test.status,
+          'Fecha': test.fecha,
+          'Nombre': test.nombre,
+          'Resultado': test.resultado,
+          'Edad': test.edad
+        };
+      });
+    
+      const ws = XLSX.utils.json_to_sheet(formattedData);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Tests');
       XLSX.writeFile(wb, 'tests.xlsx');
@@ -223,15 +252,53 @@ export default {
 
 <style scoped>
 .test-table {
-  background-color: #ffffff;
+  max-width: 900px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   border-radius: 10px;
-  margin-left: 80px;
   width: auto;
+  transition: background-color 0.3s, color 0.3s;
 }
-.test-table.dark-theme {
+
+.dark-theme {
   background-color: #333;
-  color: #fff;
+  color: white;
+}
+
+.dark-theme .form-control, .dark-theme .form-select {
+  background-color: #555;
+  color: white;
+}
+
+.dark-theme .input-group-text {
+  background-color: #444;
+  color: white;
+}
+
+.dark-theme .table {
+  background-color: #444;
+  color: white;
+}
+
+.dark-theme .table th, .dark-theme .table td {
+  border-color: #666;
+}
+
+.dark-theme .table th {
+  background-color: #555;
+  color: white;
+}
+
+.dark-theme .table td {
+  background-color: #444;
+  color: white;
+}
+
+.dark-theme .badge {
+  background-color: #666;
+}
+
+.dark-theme .table tbody tr:hover {
+  background-color: #555;
 }
 </style>

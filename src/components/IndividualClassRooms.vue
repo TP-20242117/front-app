@@ -1,7 +1,24 @@
 <template>
   <div :class="['main-content', theme]">
-    <h2>{{ students.length > 0 ? 'Lista de Estudiantes' : 'Cargar Excel de Estudiantes' }}</h2>
+    <h2>
+      {{ students.length > 0 ? 'Lista de Estudiantes' : 'Cargar Excel de Estudiantes' }}
+      <span 
+        v-if="students.length === 0" 
+        class="question-icon" 
+        @mouseenter="openModal"  
+        title="¿Cómo cargar un Excel?">
+        ?
+      </span>
+    </h2>
     
+    <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <h2>Ejemplo de Contenido del Excel</h2>
+        <img src="../assets/excel.png" alt="Instrucciones para cargar Excel" />
+        <button class="close-modal" @click="closeModal">Cerrar</button>
+      </div>
+    </div>
+
     <input
       type="file"
       @change="handleFileUpload"
@@ -41,9 +58,17 @@ export default {
       theme: localStorage.getItem('theme') || 'light',
       expectedClassroomName: '',
       isExcelUploaded: false,
+      isModalOpen: false,
     };
   },
   methods: {
+    openModal() {
+      this.isModalOpen = true;
+    },
+    closeModal() {
+      this.isModalOpen = false;
+    },
+    
     async fetchClassrooms() {
       const educatorId = localStorage.getItem('id');
       try {
@@ -184,6 +209,20 @@ export default {
 
 h2 {
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.question-icon {
+  margin-left: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #007BFF;
+  transition: color 0.3s ease;
+}
+
+.question-icon:hover {
+  color: #0056b3;
 }
 
 input[type="file"] {
@@ -206,11 +245,18 @@ input[type="file"] {
 .student-item {
   margin: 5px 0;
   padding: 10px;
-  background-color: #e8f0fe;
   border: 1px solid #c1d3fc;
   border-radius: 5px;
   display: flex;
   justify-content: space-between;
+  background-color: #e8f0fe;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.dark-theme .student-item {
+  background-color: #333;
+  border-color: #444;
+  color: #f1f1f1;
 }
 
 .student-name {
@@ -224,5 +270,53 @@ input[type="file"] {
 .student-age,
 .student-classroom {
   font-style: italic;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  width: 90%;
+  max-width: 500px;
+  box-sizing: border-box;
+}
+
+.dark-theme .modal-content {
+  background-color: #333;
+}
+
+.modal-content img {
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  margin-bottom: 15px;
+}
+
+.close-modal {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.close-modal:hover {
+  background-color: #0056b3;
 }
 </style>

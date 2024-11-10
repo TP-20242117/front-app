@@ -26,6 +26,7 @@
 
 <script>
 import classroomService from '/services/classrooms';
+import { useToast } from 'vue-toastification';
 
 export default {
   data() {
@@ -39,6 +40,15 @@ export default {
     };
   },
   created() {
+    const toast = useToast();
+    if (localStorage.getItem('loginSuccessToast') === 'true') {
+      toast('Inicio de sesión correcto', {
+        type: 'success',
+        timeout: 1000, 
+      });
+
+      localStorage.removeItem('loginSuccessToast');
+    }
     this.fetchClassrooms();
   },
   methods: {
@@ -113,6 +123,30 @@ form {
 input {
   margin-right: 10px;
   margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.dark-theme input::placeholder {
+  color: #aaa;
+}
+
+input::placeholder {
+  color: #6c757d;
+}
+
+.dark-theme input {
+  background-color: #555;
+  color: white;
+  border: 1px solid #666;
+}
+
+input {
+  background-color: #fff;
+  color: black;
+  border: 1px solid #ccc;
 }
 
 button {
@@ -177,5 +211,9 @@ button:hover {
 
 .dark-theme button:hover {
   background-color: #0056b3;
+}
+
+.vue-toastification-container {
+  z-index: 10000 !important;
 }
 </style>

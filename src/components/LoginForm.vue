@@ -39,12 +39,14 @@
             required
           />
         </div>
-        <div class="register-link">
+
+        <div class="register-link" v-if="role === 'profesor'">
           <p>
             ¿No tienes una cuenta?
             <a @click.prevent="goToRegister">Regístrate</a>
           </p>
         </div>
+
         <button type="submit">Inicia Sesión</button>
       </form>
     </div>
@@ -55,6 +57,7 @@
 import auth from '/services/auth';
 import studentService from '/services/student';
 import evaluationService from '/services/evaluation';
+import { useToast } from 'vue-toastification';
 
 export default {
   data() {
@@ -62,8 +65,11 @@ export default {
       username: '',
       password: '',
       role: 'alumno',
-      errorMessage: ''
     };
+  },
+  setup() {
+    const toast = useToast();
+    return { toast };
   },
   methods: {
     async login() {
@@ -72,24 +78,34 @@ export default {
         if (this.role === 'profesor') {
           response = await auth.loginEducator({
             email: this.username,
-            password: this.password
+            password: this.password,
           });
+
+          if (response.data && response.data.error) {
+            console.error('Error al iniciar sesión como profesor:', response.data.message);
+            this.toast.error('Credenciales incorrectas');
+            return;
+          }
+          localStorage.setItem('loginSuccessToast', 'true');
+          this.$router.push({ name: 'salones' });
         } else {
           response = await auth.loginStudent({
             username: this.username,
-            password: this.password
+            password: this.password,
           });
-          
+
           if (response.data && response.data.error) {
-            throw new Error(response.data.message);
+            console.error('Error al iniciar sesión como alumno:', response.data.message);
+            this.toast.error('Credenciales incorrectas');
+            return;
           }
-          
+
           const studentsResponse = await studentService.getAllStudents();
           if (studentsResponse.data && Array.isArray(studentsResponse.data.data)) {
-            const student = studentsResponse.data.data.find(student =>
-              student.name.toLowerCase() === this.username.toLowerCase()
+            const student = studentsResponse.data.data.find(
+              (student) => student.name.toLowerCase() === this.username.toLowerCase()
             );
-            
+
             if (student) {
               localStorage.setItem('studentId', student.id);
               localStorage.setItem('evaluationUpdateDone', 'false');
@@ -103,29 +119,18 @@ export default {
                 localStorage.setItem('evaluationId', evaluationId);
                 console.log('ID de la evaluación guardado en localStorage:', evaluationId);
               }
-
+              localStorage.setItem('loginSuccessToast', 'true');
               this.$router.push({ name: '/Tests' });
             } else {
-              this.errorMessage = 'No se encontró un estudiante con ese nombre.';
+              this.toast.error('Credenciales incorrectas');
             }
           } else {
-            this.errorMessage = 'Error al obtener la lista de estudiantes.';
+            this.toast.error('Error al obtener la lista de estudiantes');
           }
-        }
-        
-        this.errorMessage = '';
-        if (this.role === 'profesor') {
-          this.$router.push({ name: 'salones' });
         }
       } catch (error) {
         console.error('Error al iniciar sesión:', error);
-        if (error.response && error.response.status === 401) {
-          this.errorMessage = 'Credenciales incorrectas. Inténtalo de nuevo.';
-        } else if (error.message) {
-          this.errorMessage = error.message || 'Credenciales incorrectas. Inténtalo de nuevo.';
-        } else {
-          this.errorMessage = 'Ocurrió un error al iniciar sesión. Inténtalo más tarde.';
-        }
+        this.toast.error('Credenciales incorrectas');
       }
     },
 
@@ -153,9 +158,7 @@ export default {
 
       try {
         const evaluationResponse = await evaluationService.createEvaluation(evaluationData);
-        console.log("Evaluación creada:", evaluationResponse);
         localStorage.setItem('evaluationId', evaluationResponse.data.data.id);
-        console.log('ID de la evaluación guardado en localStorage:', evaluationResponse.data.data.id);
       } catch (error) {
         console.error("Error al crear la evaluación:", error);
       }
@@ -212,10 +215,6 @@ h2 {
   margin: 0 10px;
 }
 
-.tabs button:hover {
-  background-color: #e0e0e0;
-}
-
 .tabs button.active {
   background-color: #007efe;
   border-bottom: 3px solid #005bb5;
@@ -228,9 +227,7 @@ h2 {
 }
 
 .input-box label {
-  display: block;
   font-weight: bold;
-  margin-bottom: 5px;
   color: #007efe;
 }
 
@@ -239,24 +236,11 @@ h2 {
   padding: 10px;
   border: 1px solid #007efe;
   border-radius: 5px;
-  outline: none;
-}
-
-.input-box input:focus {
-  border-color: #005bb5;
-}
-
-.register-link {
-  margin-bottom: 20px;
 }
 
 .register-link a {
   color: #007efe;
-  text-decoration: none;
-}
-
-.register-link a:hover {
-  text-decoration: underline;
+  cursor: pointer;
 }
 
 button {
@@ -266,15 +250,5 @@ button {
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 16px;
-}
-
-button:hover {
-  background-color: #005bb5;
-}
-
-.error-message {
-  color: red;
-  margin-bottom: 10px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="faq-container">
+  <div :class="['faq-container', theme]">
     <h2>PREGUNTAS FRECUENTES</h2>
     
     <div class="faq-question">
@@ -73,7 +73,13 @@
 </template>
 
 <script>
-export default {};
+export default {
+  computed: {
+    theme() {
+      return localStorage.getItem('theme') || 'light';
+    }
+  }
+};
 </script>
 
 <style scoped>
@@ -84,6 +90,7 @@ export default {};
   background-color: #f5f7fa;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h2 {
@@ -134,6 +141,29 @@ p {
   margin-bottom: 0;
   font-family: 'Roboto', sans-serif;
   transition: max-height 0.3s ease-out;
+}
+
+.dark-theme .faq-container {
+  background-color: #2c2c2c;
+}
+
+.dark-theme h2 {
+  color: #ddd;
+  border-color: #3498db;
+}
+
+.dark-theme .faq-question {
+  background-color: #3c3c3c;
+  color: #ddd;
+  border: 1px solid #444;
+}
+
+.dark-theme h3 {
+  color: #ddd;
+}
+
+.dark-theme p {
+  color: #ccc;
 }
 
 @media (max-width: 768px) {

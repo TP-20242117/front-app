@@ -18,7 +18,7 @@ export default {};
   display: flex; 
   align-items: center; 
   position: fixed;
-  z-index: 10000000;
+  z-index: 1000;
   width: 100vw;
 }
 </style>
