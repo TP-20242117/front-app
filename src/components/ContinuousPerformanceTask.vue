@@ -177,6 +177,7 @@ h1 {
 .instructions-screen p {
   font-size: 18px;
   margin-bottom: 20px;
+  margin-left: 40px;
 }
 
 .instructions-screen button {

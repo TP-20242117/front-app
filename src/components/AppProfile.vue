@@ -69,7 +69,7 @@ export default {
   align-items: center;
   flex-direction: column;
   height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #f9f9f9;
   font-family: 'Arial', sans-serif;
   color: #333;
   margin-top: 50px;
