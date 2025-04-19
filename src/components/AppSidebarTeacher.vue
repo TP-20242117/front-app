@@ -36,16 +36,39 @@
       <button class="toggle-theme" @click="toggleTheme">
         <span><i class="pi" :class="themeIcon"></i></span>
       </button>
-      <button class="logout" @click="exit"><i class="pi pi-sign-out"></i> Salir</button>
+      <button class="logout" @click="showModal = true"><i class="pi pi-sign-out"></i> Salir</button>
+    </div>
+    <div v-if="showModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3>¿Cómo calificarías tu experiencia?</h3>
+        <div class="stars">
+          <i
+            v-for="star in 5"
+            :key="star"
+            class="pi"
+            :class="rating >= star ? 'pi-star-fill' : 'pi-star'"
+            @click="setRating(star)"
+          ></i>
+        </div>
+        <textarea v-model="suggestion" placeholder="¿Alguna sugerencia?"></textarea>
+        <div class="modal-buttons">
+          <button @click="submitFeedback">Enviar</button>
+          <button @click="cancelFeedback">Cancelar</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import feedbackService from "/services/feedback";
 export default {
   data() {
     return {
       theme: localStorage.getItem('theme') || 'light',
+      showModal: false,
+      rating: 0,
+      suggestion: '',
     };
   },
   computed: {
@@ -59,10 +82,27 @@ export default {
       localStorage.setItem('theme', this.theme);
       document.body.classList.toggle('dark-theme', this.theme === 'dark');
     },
-    exit() {
+    setRating(star) {
+      this.rating = star;
+    },
+    submitFeedback() {
+      const feedbackData = {
+              rating: parseInt(this.rating),
+              comment: this.suggestion,
+              educatorId: parseInt(localStorage.getItem("id"))
+            } 
+      feedbackService.createFeedback(feedbackData);
+      this.closeAndLogout();
+    },
+    cancelFeedback() {
+      this.showModal = false;
+      this.rating = 0;
+      this.suggestion = '';
+    },
+    closeAndLogout() {
       localStorage.clear();
       this.$router.push({ name: 'Login' });
-    },
+    }
   },
   mounted() {
     document.body.classList.toggle('dark-theme', this.theme === 'dark');
@@ -166,5 +206,84 @@ a:hover {
 
 .dark-theme a:hover {
   background-color: #333;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  width: 300px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal-content h3 {
+  margin-bottom: 20px;
+}
+
+.stars {
+  margin-bottom: 20px;
+}
+
+.stars i {
+  font-size: 24px;
+  color: #ccc;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.stars i.pi-star-fill {
+  color: #ffc107;
+}
+
+textarea {
+  width: 100%;
+  height: 80px;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+.modal-buttons button {
+  margin: 0 10px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-buttons button:first-child {
+  background-color: #007efe;
+  color: white;
+}
+
+.modal-buttons button:last-child {
+  background-color: #ccc;
+}
+
+.dark-theme .modal-content {
+  background-color: #2c2c2c;
+  color: white;
+}
+
+.dark-theme textarea {
+  background-color: #444;
+  color: white;
+  border: 1px solid #666;
 }
 </style>
