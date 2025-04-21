@@ -18,7 +18,7 @@
       </div>
       <div>
         <button class="btn btn-outline-primary me-2" @click="sendEmail">
-          <i class="pi pi-envelope"></i> Enviar por correo (mailto)
+          <i class="pi pi-envelope"></i> Enviar por correo
         </button>
         <button class="btn btn-success" @click="exportToExcel">
           <i class="pi pi-file-excel"></i> Exportar Excel
@@ -60,7 +60,7 @@
               {{ test.status }}
             </span>
           </td>
-          <td>{{ test.fecha }}</td>
+          <td>{{ formatDate(test.fecha) }}</td>
           <td>{{ test.nombre }}</td>
           <td>{{ test.resultado || 'Sin diagnóstico' }}</td>
           <td>{{ test.edad }}</td>
@@ -124,7 +124,8 @@ export default {
     sendEmail() {
       const toast = useToast();
       if (this.selectedClassroom) {
-        const professorEmail = "farma442@gmail.com"; 
+        const professorEmail = String(localStorage.getItem("email"));
+        console.log(professorEmail)
         const mailData = {
           email: professorEmail,
           salonId: this.selectedClassroom,
@@ -140,6 +141,14 @@ export default {
       } else {
         toast.warning("Por favor, selecciona un salón antes de enviar el correo.");
       }
+    },
+    formatDate(fecha) {
+      if (!fecha) return '';
+      const date = new Date(fecha);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0'); 
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
     },
     loadClassrooms() {
       const educatorId = localStorage.getItem('id');

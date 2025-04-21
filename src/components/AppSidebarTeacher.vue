@@ -62,6 +62,8 @@
 
 <script>
 import feedbackService from "/services/feedback";
+import emitter from '@/eventBus'; 
+
 export default {
   data() {
     return {
@@ -81,6 +83,7 @@ export default {
       this.theme = this.theme === 'dark' ? 'light' : 'dark';
       localStorage.setItem('theme', this.theme);
       document.body.classList.toggle('dark-theme', this.theme === 'dark');
+      emitter.emit('theme-changed', this.theme);
     },
     setRating(star) {
       this.rating = star;

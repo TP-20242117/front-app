@@ -87,6 +87,7 @@ export default {
             return;
           }
           localStorage.setItem('loginSuccessToast', 'true');
+          localStorage.setItem('email',this.username)
           this.$router.push({ name: 'salones' });
         } else {
           response = await auth.loginStudent({
