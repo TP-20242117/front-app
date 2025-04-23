@@ -75,8 +75,10 @@ export default {
     startTask() {
       this.resetGame();
       this.taskStarted = true;
-      this.startTimer();
-      this.showNextArrow();
+      setTimeout(() => {
+        this.startTimer();
+        this.showNextArrow();
+      }, 3000); 
     },
 
     showNextArrow() {
@@ -85,11 +87,11 @@ export default {
       this.generateRandomDirection();
       this.showArrow = true;
       this.startTime = new Date();
-      this.result = null;
+      this.result = null; 
       this.hasAnswered = false;
 
       setTimeout(() => {
-        this.showArrow = false;
+        if (this.timeUp) return;
         if (!this.hasAnswered) {
           this.result = "missed";
           this.missedArrows++;
@@ -111,29 +113,29 @@ export default {
     },
 
     handleKeyPress(event) {
-      if (
-        !this.timeUp &&
-        (event.key === "ArrowLeft" || event.key === "ArrowRight")
-      ) {
-        const responseTime = new Date() - this.startTime;
+      if (this.timeUp) return; 
 
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        if (this.hasAnswered || this.result === "missed") return;
+      
+        const responseTime = new Date() - this.startTime;
+      
         if (
           (event.key === "ArrowLeft" && this.currentDirection === "left") ||
           (event.key === "ArrowRight" && this.currentDirection === "right")
         ) {
-          if (!this.hasAnswered) {
-            this.result = "correct";
-            this.correctAnswers++;
-            this.responseTimes.push(responseTime);
-            this.hasAnswered = true;
-          }
+          this.result = "correct";
+          this.correctAnswers++;
+          this.responseTimes.push(responseTime);
         } else {
           this.result = "wrong";
           this.wrongAnswers++;
-          this.hasAnswered = true;
         }
+      
+        this.hasAnswered = true;
       }
     },
+
 
     startTimer() {
       this.timerInterval = setInterval(() => {
@@ -256,6 +258,7 @@ export default {
   display: flex;
   flex-direction: column; 
   align-items: center;  
+  gap: 30px;
 }
 
 .correct {

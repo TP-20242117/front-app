@@ -54,7 +54,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="test in filteredTests" :key="test.evaluationId">
+        <tr v-for="test in paginatedTests" :key="test.evaluationId">
           <td>
             <span class="badge" :class="test.status === 'Completed' ? 'bg-success' : 'bg-warning'">
               {{ test.status }}
@@ -76,6 +76,25 @@
         </tr>
       </tbody>
     </table>
+
+    <nav class="mt-3">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+          <button class="page-link" @click="prevPage">Anterior</button>
+        </li>
+        <li
+          class="page-item"
+          v-for="page in totalPages"
+          :key="page"
+          :class="{ active: page === currentPage }"
+        >
+          <button class="page-link" @click="goToPage(page)">{{ page }}</button>
+        </li>
+        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+          <button class="page-link" @click="nextPage">Siguiente</button>
+        </li>
+      </ul>
+    </nav>
   </div>
 </template>
 
@@ -101,19 +120,27 @@ export default {
     };
   },
   computed: {
-    totalPages() {
-      return Math.ceil(this.filteredTests.length / 10);
-    },
     filteredTests() {
-      let filtered = this.tests.filter(test =>
-        test.nombre.toLowerCase().includes(this.globalFilter.toLowerCase())
-      );
+      let filtered = this.tests;
+
+      if (this.globalFilter) {
+        filtered = filtered.filter(test =>
+          test.nombre.toLowerCase().includes(this.globalFilter.toLowerCase())
+        );
+      }
 
       if (this.selectedClassroom) {
         filtered = filtered.filter(test => test.classroomId === this.selectedClassroom);
       }
 
-      return filtered.slice((this.currentPage - 1) * 10, this.currentPage * 10);
+      return filtered;
+    },
+    paginatedTests() {
+      const start = (this.currentPage - 1) * 10;
+      return this.filteredTests.slice(start, start + 10);
+    },
+    totalPages() {
+      return Math.ceil(this.filteredTests.length / 10) || 1;
     },
   },
   mounted() {
@@ -125,19 +152,13 @@ export default {
       const toast = useToast();
       if (this.selectedClassroom) {
         const professorEmail = String(localStorage.getItem("email"));
-        console.log(professorEmail)
         const mailData = {
           email: professorEmail,
           salonId: this.selectedClassroom,
         };
         mailService.createMail(mailData)
-          .then(() => {
-            toast.success("Correo enviado exitosamente.");
-          })
-          .catch(error => {
-            console.error("Error al enviar el correo:", error);
-            toast.error("No se pudo enviar el correo. Inténtalo de nuevo.");
-          });
+          .then(() => toast.success("Correo enviado exitosamente."))
+          .catch(() => toast.error("No se pudo enviar el correo."));
       } else {
         toast.warning("Por favor, selecciona un salón antes de enviar el correo.");
       }
@@ -145,48 +166,34 @@ export default {
     formatDate(fecha) {
       if (!fecha) return '';
       const date = new Date(fecha);
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0'); 
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
+      return date.toLocaleDateString('es-ES');
     },
     loadClassrooms() {
       const educatorId = localStorage.getItem('id');
       if (educatorId) {
         classRoomsService.getClassroomsByEducator(educatorId)
-          .then(response => {
-            this.classrooms = response.data.data;
-            localStorage.setItem('classrooms', JSON.stringify(this.classrooms));
-          })
-          .catch(error => {
-            console.error('Error al obtener los salones:', error);
-          });
+          .then(response => this.classrooms = response.data.data)
+          .catch(error => console.error('Error al obtener salones:', error));
       }
     },
     loadProfessorName() {
       const educatorId = localStorage.getItem('id');
       if (educatorId) {
         educatorService.getEducatorById(educatorId)
-          .then(response => {
-            this.professorName = response.data.data.name;
-          })
-          .catch(error => {
-            console.error('Error al obtener el nombre del profesor:', error);
-          });
+          .then(response => this.professorName = response.data.data.name)
+          .catch(error => console.error('Error al obtener nombre del profesor:', error));
       }
     },
     loadStudentsByClassroom(classroomId) {
       studentsService.getAllStudentsWithEvaluations()
         .then(response => {
-          const students = response.data.data;
-          const filteredStudents = students.filter(student => student.salonId === classroomId);
-        
-          this.tests = filteredStudents.map(student => {
-            const evaluation = student.evaluations.find(evaluation => evaluation.type === 'Completo');
+          const students = response.data.data.filter(s => s.salonId === classroomId);
+          this.tests = students.map(student => {
+            const evalComp = student.evaluations.find(e => e.type === 'Completo');
             return {
-              evaluationId: evaluation ? evaluation.id : null,
-              status: evaluation ? 'Completed' : 'Pending',
-              fecha: evaluation ? evaluation.date : '',
+              evaluationId: evalComp ? evalComp.id : null,
+              status: evalComp ? 'Completed' : 'Pending',
+              fecha: evalComp ? evalComp.date : '',
               nombre: student.name,
               resultado: student.hasTdah === null 
                 ? 'Sin diagnóstico' 
@@ -197,67 +204,49 @@ export default {
               classroomId: student.salonId,
             };
           });
+          this.currentPage = 1;
         })
-        .catch(error => {
-          console.error('Error al obtener estudiantes con evaluaciones:', error);
-        });
+        .catch(error => console.error('Error al cargar estudiantes:', error));
     },
     deleteTest(test) {
-      if (confirm(`¿Estás seguro de que deseas eliminar la evaluación de ${test.nombre}?`)) {
+      if (confirm(`¿Eliminar evaluación de ${test.nombre}?`)) {
         evaluationsService.deleteEvaluation(test.evaluationId)
           .then(() => {
             this.tests = this.tests.filter(t => t.evaluationId !== test.evaluationId);
-            alert('Evaluación eliminada correctamente');
+            alert('Evaluación eliminada.');
           })
-          .catch(error => {
-            console.error('Error al eliminar la evaluación:', error);
-            alert('No se pudo eliminar la evaluación. Inténtalo de nuevo.');
-          });
+          .catch(() => alert('Error al eliminar.'));
       }
     },
     exportToExcel() {
-      const filteredTestsForExport = this.filteredTests.map(test => {
-        const { status, fecha, nombre, resultado, edad } = test;
-        return { status, fecha, nombre, resultado, edad };
-      });
-
-      const formattedData = filteredTestsForExport.map(test => {
-        return {
-          'Status': test.status,
-          'Fecha': test.fecha,
-          'Nombre': test.nombre,
-          'Resultado': test.resultado,
-          'Edad': test.edad
-        };
-      });
-    
-      const ws = XLSX.utils.json_to_sheet(formattedData);
+      const data = this.filteredTests.map(({ status, fecha, nombre, resultado, edad }) => ({
+        'Status': status,
+        'Fecha': fecha,
+        'Nombre': nombre,
+        'Resultado': resultado,
+        'Edad': edad
+      }));
+      const ws = XLSX.utils.json_to_sheet(data);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Tests');
       XLSX.writeFile(wb, 'tests.xlsx');
     },
     prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-      }
+      if (this.currentPage > 1) this.currentPage--;
     },
     nextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-      }
+      if (this.currentPage < this.totalPages) this.currentPage++;
     },
     goToPage(page) {
       this.currentPage = page;
     },
     filterTestsByClassroom() {
-      this.currentPage = 1;
-      if (this.selectedClassroom) {
-        this.loadStudentsByClassroom(this.selectedClassroom);
-      }
+      this.loadStudentsByClassroom(this.selectedClassroom);
     },
   },
 };
 </script>
+
 
 <style scoped>
 .test-table {
@@ -309,5 +298,16 @@ export default {
 
 .dark-theme .table tbody tr:hover {
   background-color: #555;
+}
+.dark-theme .page-link {
+  background-color: #555;
+  color: white;
+  border-color: #666;
+}
+
+.dark-theme .page-item.active .page-link {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
 }
 </style>

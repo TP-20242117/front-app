@@ -80,9 +80,12 @@ export default {
   },
   methods: {
     startTask() {
-      this.taskStarted = true;
-      this.resetGame();
-      this.startTimer();
+      setTimeout(() => {
+        this.taskStarted = true;
+        this.resetGame();
+        this.startTimer();
+      }, 3000); 
+      
     },
     generateRandomColor() {
       const randomColor = this.colors[Math.floor(Math.random() * this.colors.length)];

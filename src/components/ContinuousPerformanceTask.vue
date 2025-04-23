@@ -57,20 +57,28 @@ export default {
       showErrorScreen: false,
       letterStartTime: null,
       responded: false,
+      taskEnded: false,
     };
   },
   methods: {
-    startTask() {
+    async startTask() {
       this.taskStarted = true;
+
+      // Mostrar "Preparado..." 3 segundos antes de comenzar
+      this.currentLetter = 'Preparado...';
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      this.generateTargetLetter();
       this.startTimer();
       this.startLetterChange();
-      this.generateTargetLetter();
       window.addEventListener('keydown', this.handleKeyPress);
     },
     startLetterChange() {
       this.intervalId = setInterval(() => {
-        this.checkOmissionError();
-        this.generateRandomLetter();
+        if (!this.timeUp && !this.taskEnded) {
+          this.checkOmissionError();
+          this.generateRandomLetter();
+        }
       }, 500);
     },
     generateRandomLetter() {
@@ -84,7 +92,7 @@ export default {
       this.targetLetter = this.letters[randomIndex];
     },
     handleKeyPress(event) {
-      if (event.code === 'Space' && !this.timeUp && !this.responded) {
+      if (event.code === 'Space' && !this.timeUp && !this.responded && !this.taskEnded) {
         this.checkAnswer();
         this.responded = true;
       }
@@ -120,6 +128,7 @@ export default {
     },
     async endTask() {
       this.timeUp = true;
+      this.taskEnded = true;
       clearInterval(this.intervalId);
       clearInterval(this.timerInterval);
 
@@ -129,6 +138,7 @@ export default {
       } else {
         this.averageReactionTime = "No hubo respuestas correctas";
       }
+
       const evaluationId = localStorage.getItem('evaluationId');
       const cptData = {
         evaluationId: parseInt(evaluationId),

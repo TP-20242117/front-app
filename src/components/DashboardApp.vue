@@ -25,7 +25,7 @@
           <h4 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
             Estudiantes con {{ selectedCategoryName }}
           </h4>
-          <ul>
+          <ul class="overflow-y-auto max-h-60 pr-2">
             <li v-for="student in selectedCategory" :key="student.id">
               {{ student.name }} - {{ student.hasTdah ? 'Con TDAH' : 'Sin TDAH' }}
             </li>
@@ -116,8 +116,9 @@ export default {
         return;
       }
 
-      const tdahCount = this.students.filter(s => s.hasTdah).length;
-      const noTdahCount = this.students.length - tdahCount;
+      const filteredStudents = this.students.filter(s => s.hasTdah !== null);
+      const tdahCount = filteredStudents.filter(s => s.hasTdah === true).length;
+      const noTdahCount = filteredStudents.filter(s => s.hasTdah === false).length;
 
       if (this.chart) {
         this.chart.destroy();
@@ -197,7 +198,7 @@ export default {
           const points = this.chart.getElementsAtEventForMode(e, "nearest", { intersect: true }, false);
           if (points.length) {
             const index = points[0].index;
-            this.selectedCategory = this.students.filter(s => index === 0 ? s.hasTdah : !s.hasTdah);
+            this.selectedCategory = filteredStudents.filter(s => index === 0 ? s.hasTdah : !s.hasTdah);
             this.selectedCategoryName = index === 0 ? "TDAH" : "Sin TDAH";
             this.showModal = true;
           }
@@ -234,6 +235,11 @@ export default {
               0 4px 6px -2px rgba(0, 0, 0, 0.05);
   max-width: 500px;
   width: 100%;
+
+
+  max-height: 80vh;
+  overflow-y: auto;
+
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -278,5 +284,13 @@ canvas {
   width: 1000px;
   height: 800px;
   margin: 0 auto;
+}
+.modal-content ul::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content ul::-webkit-scrollbar-thumb {
+  background-color: rgba(107, 114, 128, 0.6); /* gris */
+  border-radius: 4px;
 }
 </style>
