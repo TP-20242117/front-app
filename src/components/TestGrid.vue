@@ -40,19 +40,19 @@ export default {
     return {
       tests: [
         {
-          name: 'Prueba Stroop',
+          name: 'Prueba de colores',
           route: '/stroop',
           image: require('../assets/Stroop_Task.png'),
           completed: false,
         },
         {
-          name: 'Prueba Stop Signal Task',
+          name: 'Prueba de dirección',
           route: '/stop-signal',
           image: require('../assets/Stop_Task.png'),
           completed: false,
         },
         {
-          name: 'Prueba Continuous Performance Task',
+          name: 'Prueba de la letra',
           route: '/cpt',
           image: require('../assets/CPT_Task.png'),
           completed: false,
