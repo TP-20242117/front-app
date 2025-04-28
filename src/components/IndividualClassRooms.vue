@@ -131,7 +131,7 @@ export default {
 
           this.students = json.map(student => ({
             name: student.Alumno,
-            password: student['Clave Alumno'],
+            password: String(student['Clave Alumno']),
             classroom: student.Salon,
             age: student.Edad
           }));
