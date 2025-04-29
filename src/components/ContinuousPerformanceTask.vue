@@ -11,8 +11,12 @@
       <p>Deberás presionar espacio cuando la letra A en el momento que aparezca.</p>
       <button @click="startTask">Iniciar Tarea</button>
     </div>
-
-    <div v-if="taskStarted">
+    <!-- Pantalla de cuenta regresiva -->
+    <div v-if="showCountdown" class="countdown-screen">
+      <h1>La tarea comenzará en...</h1>
+      <div class="countdown-number">{{ countdown }}</div>
+    </div>
+    <div v-if="taskStarted && !showCountdown">
       <h2 v-if="!timeUp">Presiona espacio cuando aparezca la letra "{{ targetLetter }}"</h2>
       <h1 v-if="!timeUp">{{ currentLetter }}</h1>
 
@@ -58,20 +62,30 @@ export default {
       letterStartTime: null,
       responded: false,
       taskEnded: false,
+      countdown: 3,
+      countdownInterval: null,
+      showCountdown: false
     };
   },
   methods: {
-    async startTask() {
-      this.taskStarted = true;
-
-      // Mostrar "Preparado..." 3 segundos antes de comenzar
-      this.currentLetter = 'Preparado...';
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      this.generateTargetLetter();
-      this.startTimer();
-      this.startLetterChange();
-      window.addEventListener('keydown', this.handleKeyPress);
+    startTask() {
+      this.showCountdown = true;
+      this.countdownInterval = setInterval(() => {
+        if (this.countdown > 1) {
+          this.countdown--;
+        } else {
+          clearInterval(this.countdownInterval);
+          this.taskStarted = true;
+          this.showCountdown = false;
+          this.countdown = 3; // Resetear para la próxima vez
+          
+          // Iniciar la tarea directamente después del contador
+          this.generateTargetLetter();
+          this.startTimer();
+          this.startLetterChange();
+          window.addEventListener('keydown', this.handleKeyPress);
+        }
+      }, 1000);
     },
     startLetterChange() {
       this.intervalId = setInterval(() => {
@@ -160,6 +174,12 @@ export default {
     },
     markTestAsCompleted(testIndex) {
       localStorage.setItem(`test-${testIndex}-completed`, JSON.stringify(true));
+    },
+    beforeUnmount() {
+      clearInterval(this.intervalId);
+      clearInterval(this.timerInterval);
+      clearInterval(this.countdownInterval);
+      window.removeEventListener('keydown', this.handleKeyPress);
     }
   }
 };
@@ -266,5 +286,33 @@ h1 {
 
 .result-screen button:hover {
   background-color: #f0f0f0;
+}
+.countdown-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-size: 24px;
+}
+
+.countdown-number {
+  font-size: 72px;
+  font-weight: bold;
+  margin-top: 20px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 </style>

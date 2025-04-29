@@ -9,8 +9,12 @@
       <p>➡️ Deberás presionar la tecla derecha</p>
       <button @click="startTask">Empezar</button>
     </div>
-
-    <div v-if="taskStarted">
+    <!-- Pantalla de espera -->
+    <div v-if="showCountdown" class="countdown-screen">
+      <h1>La tarea comenzará en...</h1>
+      <div class="countdown-number">{{ countdown }}</div>
+    </div>
+    <div v-if="taskStarted&& !showCountdown">
       <h2>Presiona la tecla de flecha correspondiente</h2>
       <div class="game-container">
         <div class="arrow-container">
@@ -61,6 +65,9 @@ export default {
       hasAnswered: false,
       responseTimes: [],
       startTime: null,
+      countdown: 3,
+      countdownInterval: null,
+      showCountdown: false
     };
   },
   mounted() {
@@ -70,17 +77,25 @@ export default {
     window.removeEventListener("keydown", this.handleKeyPress);
     clearInterval(this.intervalId);
     clearInterval(this.timerInterval);
+    clearInterval(this.countdownInterval);
   },
   methods: {
     startTask() {
-      this.resetGame();
-      this.taskStarted = true;
-      setTimeout(() => {
-        this.startTimer();
-        this.showNextArrow();
-      }, 3000); 
+      this.showCountdown = true;
+      this.countdownInterval = setInterval(() => {
+        if (this.countdown > 1) {
+          this.countdown--;
+        } else {
+          clearInterval(this.countdownInterval);
+          this.taskStarted = true;
+          this.showCountdown = false;
+          this.resetGame();
+          this.startTimer();
+          this.showNextArrow();
+          this.countdown = 3; // Resetear para la próxima vez
+        }
+      }, 1000);
     },
-
     showNextArrow() {
       if (this.timeUp) return;
 
@@ -324,5 +339,33 @@ export default {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
+}
+.countdown-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-size: 24px;
+}
+
+.countdown-number {
+  font-size: 72px;
+  font-weight: bold;
+  margin-top: 20px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 </style>
