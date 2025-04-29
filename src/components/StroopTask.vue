@@ -10,6 +10,10 @@
       <p>Tendrás que presionar el color azul, y luego continuar con el color que te salga.</p>
       <button @click="startTask">Iniciar Tarea</button>
     </div>
+    <div v-if="showCountdown" class="countdown-screen">
+      <h1>La tarea comenzará en...</h1>
+      <div class="countdown-number">{{ countdown }}</div>
+    </div>
 
     <div v-if="taskStarted">
       <h2>Seleccione el color</h2>
@@ -54,6 +58,9 @@ import  ResultService  from '/services/result';
 export default {
   data() {
     return {
+      countdown: 3,
+      countdownInterval: null,
+      showCountdown: false,
       taskStarted: false,
       colors: [
         { name: 'ROJO', code: '#ff0000' },
@@ -80,12 +87,19 @@ export default {
   },
   methods: {
     startTask() {
-      setTimeout(() => {
-        this.taskStarted = true;
-        this.resetGame();
-        this.startTimer();
-      }, 3000); 
-      
+      this.showCountdown = true;
+      this.countdownInterval = setInterval(() => {
+        if (this.countdown > 1) {
+          this.countdown--;
+        } else {
+          clearInterval(this.countdownInterval);
+          this.taskStarted = true;
+          this.resetGame();
+          this.startTimer();
+          this.showCountdown = false;
+          this.countdown = 3; // Resetear para la próxima vez
+        }
+      }, 1000);
     },
     generateRandomColor() {
       const randomColor = this.colors[Math.floor(Math.random() * this.colors.length)];
@@ -173,6 +187,7 @@ export default {
   },
   beforeUnmount() {
     clearInterval(this.timerInterval);
+    clearInterval(this.countdownInterval);
   }
 };
 </script>
@@ -302,5 +317,33 @@ button {
 
 .result-screen button:hover {
   background-color: #f0f0f0;
+}
+.countdown-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-size: 24px;
+}
+
+.countdown-number {
+  font-size: 72px;
+  font-weight: bold;
+  margin-top: 20px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 </style>
