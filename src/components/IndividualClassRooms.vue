@@ -168,7 +168,7 @@ export default {
             });
           }
           alert('Estudiantes cargados exitosamente');
-          this.students = [];
+          await this.checkExistingStudents(salonId);
           this.isExcelUploaded = false;
         } else {
           alert('No se encontró el salón correspondiente.');
