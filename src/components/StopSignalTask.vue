@@ -7,7 +7,7 @@
       <h2>Ejemplo:</h2>
       <p>⬅️ Deberás presionar la tecla izquierda</p>
       <p>➡️ Deberás presionar la tecla derecha</p>
-      <button @click="startTask">Empezar</button>
+      <button @click="startTask">Iniciar Tarea</button>
     </div>
     <!-- Pantalla de espera -->
     <div v-if="showCountdown" class="countdown-screen">
