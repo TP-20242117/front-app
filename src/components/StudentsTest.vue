@@ -214,6 +214,9 @@ export default {
           .then(() => {
             this.tests = this.tests.filter(t => t.evaluationId !== test.evaluationId);
             alert('Evaluación eliminada.');
+            if (this.selectedClassroom) {
+            this.loadStudentsByClassroom(this.selectedClassroom);
+        }
           })
           .catch(() => alert('Error al eliminar.'));
       }
