@@ -197,9 +197,9 @@ export default {
               nombre: student.name,
               resultado: student.hasTdah === null 
                 ? 'Sin diagnóstico' 
-                : student.hasTdah === 0 
-                ? 'Sin Tdah' 
-                : 'Con Tdah',
+                : Number(student.hasTdah) === 0 
+                ? 'Sin indicio de Tdah' 
+                : 'Tiene indicios de Tdah',
               edad: student.age,
               classroomId: student.salonId,
             };

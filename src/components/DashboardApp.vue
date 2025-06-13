@@ -19,15 +19,20 @@
         <h3 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-2">Resumen de TDAH</h3>
         <canvas ref="barChart"></canvas>
       </div>
+      <div v-else-if="selectedClassroom" class="text-center mt-5">
+        <h1 class="text-xl font-semibold text-red-500 dark:text-red-400">
+          No hay alumnos registrados en este salón.
+        </h1>
+      </div>
 
       <div v-if="showModal" class="modal-overlay" @click="closeModal">
         <div class="modal-content" :class="{ 'dark': theme === 'dark' }" @click.stop>
           <h4 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Estudiantes con {{ selectedCategoryName }}
+            Estudiantes con indicios de {{ selectedCategoryName }}
           </h4>
           <ul class="overflow-y-auto max-h-60 pr-2">
             <li v-for="student in selectedCategory" :key="student.id">
-              {{ student.name }} - {{ student.hasTdah ? 'Con TDAH' : 'Sin TDAH' }}
+              {{ student.name }} - {{ student.hasTdah ? 'Tiene indicios de TDAH' : 'Sin indicios de TDAH' }}
             </li>
           </ul>
           <button @click="closeModal" class="btn btn-secondary">Cerrar</button>
@@ -106,13 +111,11 @@ export default {
     renderBarChart() {
       const canvas = this.$refs.barChart;
       if (!canvas) {
-        console.warn("Canvas no disponible aún.");
         return;
       }
 
       const ctx = canvas.getContext("2d");
       if (!ctx) {
-        console.warn("No se pudo obtener el contexto del canvas.");
         return;
       }
 
@@ -132,7 +135,7 @@ export default {
         this.chart = new Chart(ctx, {
           type: "bar",
           data: {
-            labels: ["Con TDAH", "Sin TDAH"],
+            labels: ["Con indicios de TDAH", "Sin indicios de TDAH"],
             datasets: [{
               label: "Cantidad de estudiantes",
               data: [tdahCount, noTdahCount],
