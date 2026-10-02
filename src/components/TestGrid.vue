@@ -194,22 +194,22 @@ export default {
 
 <style scoped>
 .main-content {
-  padding: 20px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  height: 60vh;
+  min-height: 100%;
 }
 
 h2 {
-  margin-bottom: 20px;
+  margin: 0 0 24px;
+  color: #1d4ed8;
+  font-size: clamp(2.2rem, 2.6vw, 2.8rem);
+  font-weight: 600;
 }
 
 .tests-container {
   flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  flex-direction: column;
   width: 100%;
 }
 
@@ -218,79 +218,82 @@ h2 {
   flex-direction: column;
   gap: 20px;
   width: 100%;
-  max-width: 600px;
-  justify-content: center;
-  align-items: center;
-  margin-left: 100px;
+  max-width: 760px;
+  margin-left: 80px;
 }
 
 .test-card {
-  background-color: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  padding: 18px 20px;
+  border-radius: 22px;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
   text-align: left;
   color: inherit;
-  transition: transform 0.3s ease, background-color 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   display: flex;
   align-items: center;
-  gap: 15px;
-  min-height: 120px;
-  cursor: pointer;
+  min-height: 130px;
   width: 100%;
 }
 
 .test-card.completed {
-  background-color: lightgreen;
+  background: linear-gradient(135deg, rgba(187, 247, 208, 0.8) 0%, rgba(220, 252, 231, 0.92) 100%);
+  border-color: rgba(34, 197, 94, 0.22);
 }
 
 .test-disabled {
   pointer-events: none;
+  width: 100%;
 }
 
 .test-card-content {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 18px;
+  width: 100%;
 }
 
 .test-card img {
-  max-width: 200px;
-  border-radius: 5px;
-  object-fit: contain;
+  width: 170px;
+  height: 92px;
+  border-radius: 16px;
+  object-fit: cover;
+  background: #eff6ff;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
 }
 
 .test-card .test-name {
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: inherit;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1f2937;
   line-height: 1.4;
 }
 
 .test-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.12);
 }
 
 .dark-theme .main-content {
-  background-color: #121212;
+  background: transparent;
   color: white;
 }
 
 .dark-theme .test-card {
-  background-color: #2c3e50;
+  background: rgba(30, 41, 59, 0.9);
   color: #f1f1f1;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border-color: rgba(148, 163, 184, 0.12);
+  box-shadow: 0 14px 28px rgba(2, 6, 23, 0.32);
 }
 
 .dark-theme .test-card.completed {
-  background-color: #2c3e50;
+  background: linear-gradient(135deg, rgba(22, 101, 52, 0.75) 0%, rgba(20, 83, 45, 0.9) 100%);
 }
 
-.dark-theme .test-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+.dark-theme .test-card .test-name {
+  color: #f8fafc;
 }
 
 .test-name {
@@ -303,7 +306,7 @@ h2 {
   display: block;
   color: inherit;
   text-decoration: none;
-  transition: background-color 0.2s;
+  width: 100%;
 }
 
 .test-link:hover {

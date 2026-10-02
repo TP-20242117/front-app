@@ -1,11 +1,15 @@
 <template>
   <div :class="['test-table', 'container', 'mt-4', { 'dark-theme': isDarkTheme }]">
-    <h2>Hola {{ professorName }}</h2>
-    <p>Estos son los test del mes</p>
+    <div class="table-header">
+      <div>
+        <h2>Hola {{ professorName }}</h2>
+        <p>Estos son los test del mes</p>
+      </div>
+    </div>
 
-    <div class="d-flex justify-content-between mb-3">
-      <div class="input-group w-50" :class="{ 'bg-dark': isDarkTheme }">
-        <span class="input-group-text" :class="{ 'bg-dark': isDarkTheme }">
+    <div class="toolbar">
+      <div class="input-group search-box" :class="{ 'dark-box': isDarkTheme }">
+        <span class="input-group-text" :class="{ 'dark-box': isDarkTheme }">
           <i class="pi pi-search"></i>
         </span>
         <input
@@ -16,7 +20,7 @@
           :class="{ 'bg-dark text-light': isDarkTheme }"
         />
       </div>
-      <div>
+      <div class="action-buttons">
         <button class="btn btn-outline-primary me-2" @click="sendEmail">
           <i class="pi pi-envelope"></i> Enviar por correo
         </button>
@@ -105,6 +109,7 @@ import studentsService from '/services/student';
 import evaluationsService from '/services/evaluation';
 import educatorService from '/services/educator';
 import mailService from '/services/mail';
+import emitter from '@/eventBus';
 import { useToast } from 'vue-toastification';
 
 export default {
@@ -112,7 +117,7 @@ export default {
     return {
       globalFilter: '',
       currentPage: 1,
-      isDarkTheme: false,
+      isDarkTheme: localStorage.getItem('theme') === 'dark',
       selectedClassroom: '',
       tests: [],
       classrooms: [],
@@ -144,10 +149,20 @@ export default {
     },
   },
   mounted() {
+    this.isDarkTheme = localStorage.getItem('theme') === 'dark';
+    document.body.classList.toggle('dark-theme', this.isDarkTheme);
+    emitter.on('theme-changed', this.handleThemeChange);
     this.loadClassrooms();
     this.loadProfessorName();
   },
+  beforeUnmount() {
+    emitter.off('theme-changed', this.handleThemeChange);
+  },
   methods: {
+    handleThemeChange(newTheme) {
+      this.isDarkTheme = newTheme === 'dark';
+      document.body.classList.toggle('dark-theme', this.isDarkTheme);
+    },
     sendEmail() {
       const toast = useToast();
       if (this.selectedClassroom) {
@@ -253,64 +268,271 @@ export default {
 
 <style scoped>
 .test-table {
-  max-width: 900px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  border-radius: 10px;
-  width: auto;
+  position: relative;
+  z-index: 1;
+  max-width: 980px;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  padding: 28px 24px 18px;
+  border-radius: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  width: min(980px, 100%);
   transition: background-color 0.3s, color 0.3s;
+  margin: 30px auto 40px;
+}
+
+.table-header {
+  margin-bottom: 22px;
+}
+
+.table-header h2 {
+  margin: 0;
+  font-size: clamp(2rem, 2.5vw, 2.8rem);
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.table-header p {
+  margin: 8px 0 0;
+  color: #475569;
+  font-size: 1.02rem;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  width: min(360px, 100%);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.search-box .input-group-text {
+  background: #ffffff;
+  color: #64748b;
+  border: 1px solid #dbe3f0;
+  border-right: none;
+}
+
+.search-box .form-control {
+  border: 1px solid #dbe3f0;
+  border-left: none;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 12px 14px;
+}
+
+.search-box .form-control:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border: none;
+}
+
+.btn-outline-primary {
+  background: rgba(37, 99, 235, 0.06);
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+}
+
+.btn-outline-primary:hover {
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  box-shadow: 0 10px 20px rgba(34, 197, 94, 0.18);
+}
+
+.form-label {
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 10px;
+}
+
+.form-select {
+  border-radius: 14px;
+  border: 1px solid #dbe3f0;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 12px 14px;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  margin-top: 8px;
+  background: transparent;
+}
+
+.table thead th {
+  background: rgba(148, 163, 184, 0.16);
+  color: #334155;
+  border: none;
+  padding: 14px 16px;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.table tbody td {
+  background: rgba(255, 255, 255, 0.9);
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  border-right: none;
+  border-left: none;
+  padding: 14px 16px;
+  color: #1f2937;
+  vertical-align: middle;
+}
+
+.table tbody tr td:first-child {
+  border-left: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 12px 0 0 12px;
+}
+
+.table tbody tr td:last-child {
+  border-right: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 0 12px 12px 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.bg-success {
+  background: rgba(34, 197, 94, 0.14) !important;
+  color: #166534 !important;
+}
+
+.bg-warning {
+  background: rgba(245, 158, 11, 0.14) !important;
+  color: #92400e !important;
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.18);
+}
+
+.pagination {
+  margin-top: 18px;
+  gap: 8px;
+}
+
+.page-link {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.8);
+  color: #334155;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.page-item.active .page-link {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border-color: #1d4ed8;
+  color: white;
+}
+
+.page-item.disabled .page-link {
+  opacity: 0.5;
 }
 
 .dark-theme {
-  background-color: #333;
-  color: white;
+  background: #313131;
+  color: #f8fafc;
+  border-color: rgba(148, 163, 184, 0.14);
 }
 
-.dark-theme .form-control, .dark-theme .form-select {
-  background-color: #555;
-  color: white;
+.dark-theme .table-header h2 {
+  color: #e2e8f0;
 }
 
-.dark-theme .input-group-text {
-  background-color: #444;
-  color: white;
+.dark-theme .table-header p,
+.dark-theme .form-label,
+.dark-theme label,
+.dark-theme .table thead th,
+.dark-theme .table tbody td,
+.dark-theme .page-link {
+  color: #e2e8f0;
 }
 
-.dark-theme .table {
-  background-color: #444;
-  color: white;
+.dark-theme .search-box .input-group-text,
+.dark-theme .search-box .form-control,
+.dark-theme .form-select,
+.dark-theme .page-link {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(148, 163, 184, 0.22);
+  color: #f8fafc;
 }
 
-.dark-theme .table th, .dark-theme .table td {
-  border-color: #666;
+.dark-theme .search-box .form-control::placeholder {
+  color: #cbd5e1;
 }
 
-.dark-theme .table th {
-  background-color: #555;
-  color: white;
+.dark-theme .table tbody td {
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  color: #f8fafc;
 }
 
-.dark-theme .table td {
-  background-color: #444;
-  color: white;
+.dark-theme .table thead th {
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .dark-theme .badge {
-  background-color: #666;
+  background-color: rgba(148, 163, 184, 0.18);
 }
 
-.dark-theme .table tbody tr:hover {
-  background-color: #555;
-}
-.dark-theme .page-link {
-  background-color: #555;
-  color: white;
-  border-color: #666;
+.dark-theme .btn-outline-primary {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(96, 165, 250, 0.28);
+  color: #dbeafe;
 }
 
 .dark-theme .page-item.active .page-link {
-  background-color: #007bff;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-color: #60a5fa;
+  color: #ffffff;
+}
+
+.dark-theme .btn-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+.dark-theme .action-buttons .btn-success {
+  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
   color: white;
-  border-color: #007bff;
 }
 </style>

@@ -181,75 +181,133 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #d2e1f9;
+  min-height: 100vh;
+  background-color: #dfeafc;
+  padding: 24px;
 }
 
 .login-box {
-  background-color: white;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: min(100%, 650px);
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 30px;
+  padding: 36px 52px 30px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   text-align: center;
 }
 
 h2 {
-  color: #007efe;
-  margin-bottom: 20px;
+  margin: 0 0 28px;
+  color: #1d4ed8;
+  font-size: clamp(2.2rem, 3vw, 3rem);
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .tabs {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin: 0 auto 28px;
+  background: #edf3ff;
+  border-radius: 16px;
+  padding: 8px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .tabs button {
-  background-color: #f0f0f0;
+  flex: 1;
   border: none;
-  padding: 10px 20px;
+  border-radius: 14px;
+  background: transparent;
+  color: #1d4ed8;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 16px 12px;
   cursor: pointer;
-  font-size: 16px;
-  border-bottom: 3px solid transparent;
-  color: #333;
-  transition: 0.3s;
-  margin: 0 10px;
+  transition: all 0.2s ease;
 }
 
 .tabs button.active {
-  background-color: #007efe;
-  border-bottom: 3px solid #005bb5;
-  color: white;
+  background: linear-gradient(180deg, #1f6fe5 0%, #1d4ed8 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(29, 78, 216, 0.2);
+}
+
+form {
+  margin-top: 12px;
 }
 
 .input-box {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   text-align: left;
 }
 
 .input-box label {
-  font-weight: bold;
-  color: #007efe;
+  display: block;
+  margin-bottom: 8px;
+  color: #1d4ed8;
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .input-box input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #007efe;
-  border-radius: 5px;
+  height: 54px;
+  border: 2px solid rgba(59, 130, 246, 0.45);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.3);
+  padding: 0 16px;
+  font-size: 1rem;
+  color: #1f2937;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-box input::placeholder {
+  color: #8ea4c7;
+}
+
+.input-box input:focus {
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+}
+
+.register-link {
+  margin: 6px 0 18px;
+  text-align: left;
+}
+
+.register-link p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.95rem;
 }
 
 .register-link a {
-  color: #007efe;
+  color: #1d4ed8;
+  font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
 }
 
-button {
-  background-color: #007efe;
+button[type='submit'] {
+  width: 100%;
+  background: linear-gradient(180deg, #1f6fe5 0%, #1d4ed8 100%);
   color: white;
-  padding: 10px 20px;
   border: none;
-  border-radius: 20px;
+  border-radius: 18px;
+  padding: 18px 20px;
+  font-size: 1.15rem;
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 10px 20px rgba(29, 78, 216, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button[type='submit']:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 22px rgba(29, 78, 216, 0.24);
 }
 </style>

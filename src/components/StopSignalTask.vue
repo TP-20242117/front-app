@@ -218,36 +218,67 @@ export default {
 </script>
 <style scoped>
 .stop-signal-task {
-  text-align: center;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px 48px;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  color: #1f2937;
+}
+
+.instructions-screen,
+.countdown-screen,
+.result-screen {
+  width: min(760px, 92vw);
+  margin: 0 auto;
+  border-radius: 28px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
 }
 
 .instructions-screen {
   text-align: center;
-  margin: 20px;
+  padding: 40px 32px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.18);
 }
 
 .instructions-screen h1 {
-  font-size: 36px;
+  font-size: clamp(2.2rem, 2.6vw, 2.8rem);
   margin-bottom: 20px;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.instructions-screen h2 {
+  font-size: 1.3rem;
+  margin: 24px 0 12px;
+  color: #334155;
 }
 
 .instructions-screen p {
-  font-size: 18px;
-  margin-bottom: 20px;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 18px;
+  color: #475569;
 }
 
 .instructions-screen button {
-  padding: 10px 20px;
-  font-size: 18px;
-  background-color: #4CAF50;
+  padding: 14px 28px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: white;
   border: none;
-  border-radius: 50px;
+  border-radius: 999px;
   cursor: pointer;
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .instructions-screen button:hover {
-  background-color: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.3);
 }
 
 .game-container {
@@ -255,45 +286,69 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: min(760px, 90vw);
+  margin: 0 auto;
+  padding: 30px 20px 12px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
   position: relative;
-  height: 200px;
+  min-height: 260px;
+}
+
+h2 {
+  font-size: clamp(2rem, 2.7vw, 2.8rem);
+  margin: 0 0 18px;
+  color: #1d4ed8;
+  font-weight: 600;
 }
 
 .arrow-container {
-  font-size: 72px;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  font-size: clamp(4rem, 9vw, 7rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 110px;
+  margin-bottom: 16px;
 }
 
 .result-text {
-  font-size: 24px;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column; 
-  align-items: center;  
-  gap: 30px;
+  font-size: 1.35rem;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  min-width: 180px;
+  background: rgba(148, 163, 184, 0.08);
 }
 
 .correct {
-  color: green;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.12);
+  border: 1px solid rgba(22, 163, 74, 0.28);
 }
 
 .wrong {
-  color: red;
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.25);
 }
 
 .missed {
-  color: orange;
+  color: #d97706;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.26);
 }
 
 .timer {
-  font-size: 24px;
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 22px;
+  color: #1e293b;
 }
 
 .result-screen {
@@ -302,34 +357,42 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(4px);
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  text-align: center;
+  padding: 24px;
 }
 
 .result-screen h1 {
-  font-size: 48px;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  margin-bottom: 14px;
 }
 
 .result-screen p {
-  font-size: 24px;
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  margin: 8px 0;
 }
 
 .result-screen button {
   background-color: white;
-  color: black;
-  font-size: 15px;
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 700;
   border: none;
   cursor: pointer;
-  border-radius: 50px;
+  border-radius: 999px;
+  padding: 14px 26px;
+  margin-top: 18px;
 }
 
 .result-screen button:hover {
-  background-color: #f0f0f0;
+  background-color: #f8fafc;
 }
 
 .waiting-symbol {
@@ -340,13 +403,14 @@ export default {
   left: 50%;
   transform: translateX(-50%);
 }
+
 .countdown-screen {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
+  background: rgba(15, 23, 42, 0.82);
   color: white;
   display: flex;
   flex-direction: column;
@@ -356,9 +420,14 @@ export default {
   font-size: 24px;
 }
 
+.countdown-screen h1 {
+  font-size: clamp(2.2rem, 2.6vw, 2.8rem);
+  font-weight: 600;
+}
+
 .countdown-number {
-  font-size: 72px;
-  font-weight: bold;
+  font-size: clamp(4rem, 10vw, 7rem);
+  font-weight: 700;
   margin-top: 20px;
   animation: pulse 1s infinite;
 }

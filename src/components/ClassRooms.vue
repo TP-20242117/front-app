@@ -106,41 +106,74 @@ export default {
 
 <style scoped>
 .main-content {
-  padding: 20px;
+  padding: 28px 28px 40px;
   display: flex;
   flex-direction: column;
-  height: auto;
+  min-height: calc(100vh - 76px);
+  color: #1f2937;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h2 {
-  margin-bottom: 20px;
+  margin: 0 0 18px;
+  font-size: clamp(2rem, 2vw + 1rem, 2.5rem);
+  line-height: 1.2;
+  font-weight: 600;
+  color: #1f2937;
 }
 
 form {
-  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 22px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(6px);
+}
+
+h3 {
+  margin: 0 0 18px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #334155;
 }
 
 input {
-  margin-right: 10px;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  transition: background-color 0.3s, color 0.3s;
+  flex: 1 1 260px;
+  max-width: 420px;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid #dbe3f0;
+  background: #f8fbff;
+  color: #1f2937;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
 }
 
 .dark-theme input::placeholder {
-  color: #aaa;
+  color: #cbd5e1;
 }
 
 input::placeholder {
-  color: #6c757d;
+  color: #64748b;
 }
 
 .dark-theme input {
-  background-color: #555;
-  color: white;
-  border: 1px solid #666;
+  background-color: rgba(15, 23, 42, 0.7);
+  color: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.22);
 }
 
 input {
@@ -150,67 +183,107 @@ input {
 }
 
 button {
-  padding: 10px 15px;
-  background-color: #007bff;
+  min-height: 48px;
+  padding: 12px 22px;
+  background: linear-gradient(180deg, #1f6fe5 0%, #1d4ed8 100%);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 14px;
   cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 12px 22px rgba(29, 78, 216, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 16px 28px rgba(29, 78, 216, 0.24);
+  filter: brightness(1.02);
 }
 
 .classrooms-list {
-  margin-top: 20px;
+  margin-top: 8px;
 }
 
 .classrooms-grid {
   display: flex;
-  gap: 20px;
+  gap: 22px;
   flex-wrap: wrap;
 }
 
 .classroom-card {
-  background-color: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 200px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 14px 14px 18px;
+  border-radius: 22px;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+  width: 220px;
   text-align: center;
   text-decoration: none;
   color: inherit;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.classroom-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 36px rgba(30, 64, 175, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .classroom-card img {
   max-width: 100%;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
 }
 
 .classroom-name {
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 600;
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.05rem;
 }
 
 .dark-theme .main-content {
   background-color: #121212;
-  color: white;
+  color: #f8fafc;
+}
+
+.dark-theme h2,
+.dark-theme h3,
+.dark-theme .classroom-name {
+  color: #f8fafc;
+}
+
+.dark-theme form {
+  background: rgba(49, 49, 49, 0.8);
+  border-color: rgba(148, 163, 184, 0.18);
+  box-shadow: 0 16px 30px rgba(2, 6, 23, 0.2);
+}
+
+.dark-theme h3 {
+  color: #e2e8f0;
 }
 
 .dark-theme .classroom-card {
-  background-color: #273852;
-  color: #ddd;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  background: rgba(49, 49, 49, 0.9);
+  border-color: rgba(148, 163, 184, 0.12);
+  box-shadow: 0 16px 34px rgba(2, 6, 23, 0.28);
+}
+
+.dark-theme .classroom-card:hover {
+  box-shadow: 0 18px 34px rgba(59, 130, 246, 0.18);
 }
 
 .dark-theme button {
-  background-color: #007bff;
+  background: linear-gradient(180deg, #2b7de9 0%, #1d4ed8 100%);
 }
 
 .dark-theme button:hover {
-  background-color: #0056b3;
+  filter: brightness(1.05);
 }
 
 .vue-toastification-container {
