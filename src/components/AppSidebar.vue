@@ -71,13 +71,28 @@ export default {
       this.rating = star;
     },
     submitFeedback() {
+      const studentId = Number.parseInt(localStorage.getItem('studentId') || '', 10);
+      const rating = Number(this.rating);
+
+      if (!Number.isInteger(studentId) || rating < 1 || rating > 5) {
+        console.warn('No se pudo enviar la calificación de experiencia del alumno.');
+        this.closeAndLogout();
+        return;
+      }
+
       const feedbackData = {
-              rating: parseInt(this.rating),
-              comment: this.suggestion,
-              studentId: parseInt(localStorage.getItem("studentId"))
-            } 
-      feedbackService.createFeedback(feedbackData);
-      this.closeAndLogout();
+        rating,
+        comment: this.suggestion.trim(),
+        studentId,
+      };
+
+      feedbackService.createFeedback(feedbackData)
+        .catch((error) => {
+          console.error('Error al enviar la calificación del alumno:', error);
+        })
+        .finally(() => {
+          this.closeAndLogout();
+        });
     },
     cancelFeedback() {
       this.showModal = false;

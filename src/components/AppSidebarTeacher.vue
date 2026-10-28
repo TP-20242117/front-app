@@ -89,13 +89,28 @@ export default {
       this.rating = star;
     },
     submitFeedback() {
+      const educatorId = Number.parseInt(localStorage.getItem('id') || '', 10);
+      const rating = Number(this.rating);
+
+      if (!Number.isInteger(educatorId) || rating < 1 || rating > 5) {
+        console.warn('No se pudo enviar la calificación de experiencia del profesor.');
+        this.closeAndLogout();
+        return;
+      }
+
       const feedbackData = {
-              rating: parseInt(this.rating),
-              comment: this.suggestion,
-              educatorId: parseInt(localStorage.getItem("id"))
-            } 
-      feedbackService.createFeedback(feedbackData);
-      this.closeAndLogout();
+        rating,
+        comment: this.suggestion.trim(),
+        educatorId,
+      };
+
+      feedbackService.createFeedback(feedbackData)
+        .catch((error) => {
+          console.error('Error al enviar la calificación del profesor:', error);
+        })
+        .finally(() => {
+          this.closeAndLogout();
+        });
     },
     cancelFeedback() {
       this.showModal = false;
